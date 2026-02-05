@@ -56,23 +56,6 @@ export default function Portfolio() {
   const fieldV = field.trim();
   const certV = cert.trim();
 
-  const isValid =
-  userId.trim() !== "" &&
-  isIdChecked &&                // 아이디 중복확인 통과
-  pw !== "" &&
-  validatePassword(pw) === "" && // 비밀번호 규칙 통과
-  pw === pw2 &&                  // 비밀번호 일치
-  name.trim() !== "" &&
-  birthY !== "" &&
-  birthM !== "" &&
-  birthD !== "" &&
-  gender !== "" &&
-  phone2.trim() !== "" &&
-  phone3.trim() !== "" &&
-  emailId.trim() !== "" &&
-  emailDomain.trim() !== "";
-
-
   // ✅ 검증 함수
   const validate = (): Errors => {
     const next: Errors = {};
@@ -326,3 +309,4 @@ export default function Portfolio() {
     </main>
   );
 }
+
