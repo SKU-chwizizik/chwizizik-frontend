@@ -1,10 +1,8 @@
-/* ✅ 모든 페이지 기본: 가운데 정렬 + 폭 제한 */
 .page {
   min-height: calc(100vh - var(--header-h));
   padding-top: var(--header-h);
   display: grid;
   place-items: center;
-  background: #fff;
 }
 
 .container {
@@ -13,6 +11,5 @@
   padding: 0 var(--page-padding);
 }
 
-/* 버튼/인풋 기본 */
 button { font-family: inherit; }
 input, select, textarea { font-family: inherit; }

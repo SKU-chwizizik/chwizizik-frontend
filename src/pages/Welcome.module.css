@@ -1,49 +1,52 @@
 .page {
+  padding-top: 76px;
   min-height: 100svh;
   display: flex;
   justify-content: center;
-  align-items: center;
+  overflow-x: hidden;
 }
 
-.box {
-  width: min(420px, 92vw);
+.wrap {
+  width: min(520px, 92vw);
+  padding: clamp(28px, 6vh, 70px) 0 80px;
   text-align: center;
 }
 
 .title {
-  font-size: 36px;
-  font-weight: 800;
-  margin-bottom: 16px;
+  margin: 0 0 16px;
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
 }
 
 .desc {
-  font-size: 15px;
-  color: #555;
+  margin: 0 0 34px;
+  color: #444;
   line-height: 1.6;
-  margin-bottom: 32px;
 }
 
-.buttons {
-  display: flex;
-  flex-direction: column;
+.btnRow {
+  display: grid;
   gap: 12px;
+  justify-items: center;
+}
+
+.btn {
+  width: min(360px, 92vw);
+  height: 46px;
+  border-radius: 6px;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid #cfcfcf;
+  background: #fff;
 }
 
 .primary {
-  height: 46px;
-  border-radius: 6px;
   border: 0;
   color: #fff;
-  font-weight: 800;
-  cursor: pointer;
   background: linear-gradient(90deg, #0f0f0f 0%, #3a55ff 100%);
 }
 
 .ghost {
-  height: 46px;
-  border-radius: 6px;
-  border: 1px solid #cfcfcf;
   background: #fff;
-  font-weight: 700;
-  cursor: pointer;
 }

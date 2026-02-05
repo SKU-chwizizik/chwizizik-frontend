@@ -192,3 +192,8 @@
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) 96px;
   }
 }
+
+.submitDisabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
