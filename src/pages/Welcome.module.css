@@ -1,0 +1,49 @@
+.page {
+  min-height: 100svh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.box {
+  width: min(420px, 92vw);
+  text-align: center;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.desc {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.primary {
+  height: 46px;
+  border-radius: 6px;
+  border: 0;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+  background: linear-gradient(90deg, #0f0f0f 0%, #3a55ff 100%);
+}
+
+.ghost {
+  height: 46px;
+  border-radius: 6px;
+  border: 1px solid #cfcfcf;
+  background: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}

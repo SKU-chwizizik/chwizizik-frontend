@@ -1,0 +1,148 @@
+.page {
+  padding-top: 76px;
+  min-height: 100svh;
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
+}
+
+.wrap {
+  width: min(820px, 92vw);
+  padding: clamp(18px, 4vh, 40px) 0 80px;
+}
+
+/* 타이틀: 맨 위 가운데 */
+.title {
+  margin: 0 0 22px;
+  text-align: center;
+  font-size: 44px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+/* 카드 */
+.card {
+  width: min(720px, 92vw);
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.06);
+  padding: clamp(20px, 3vw, 34px);
+}
+
+/* 라벨(좌) + 입력(우) */
+.row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  align-items: center;
+  column-gap: 18px;
+  margin: 14px 0;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+}
+
+/* 공통 input/select */
+.input {
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
+  outline: none;
+  font-size: 14px;
+  width: 100%;
+  min-width: 0;
+}
+.input:focus {
+  border-color: #8aa2ff;
+}
+
+.select {
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
+  background: #fff;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Signup에서 쓰던 field 개념 그대로 */
+.field {
+  width: min(360px, 52vw);
+}
+
+/* 파일 입력 그룹 */
+.fileGroup {
+  width: min(520px, 70vw);
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.fileBtn {
+  height: 46px;
+  border-radius: 6px;
+  border: 1px solid #cfcfcf;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  user-select: none;
+}
+
+.fileInput {
+  display: none;
+}
+
+.fileName {
+  font-size: 13px;
+  color: #666;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 제출 버튼 */
+.submit {
+  margin: 22px auto 0;
+  width: min(360px, 52vw);
+  height: 46px;
+  border-radius: 6px;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 800;
+  background: linear-gradient(90deg, #0f0f0f 0%, #3a55ff 100%);
+  display: grid;
+  place-items: center;
+}
+
+/* 모바일에서 라벨 위로 */
+@media (max-width: 720px) {
+  .row {
+    grid-template-columns: 1fr;
+    row-gap: 8px;
+  }
+  .field,
+  .fileGroup,
+  .submit {
+    width: 100%;
+  }
+  .fileGroup {
+    grid-template-columns: 110px 1fr;
+    width: 100%;
+  }
+}

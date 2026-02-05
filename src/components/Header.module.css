@@ -1,0 +1,63 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 76px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+}
+
+.inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+}
+
+/* 로고 */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 20px;
+  color: #111;
+}
+
+.logo img {
+  width: 40px;
+  height: 40px;
+}
+
+/* 오른쪽 메뉴 묶음 */
+.right {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+}
+
+.link {
+  text-decoration: none;
+  font-size: 15px;
+  color: #444;
+}
+
+.link.active {
+  font-weight: 700;
+  color: #111;
+}
+
+/* 로그인 버튼 */
+.loginBtn {
+  margin-left: 12px;
+  padding: 6px 20px;
+  border-radius: 999px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}

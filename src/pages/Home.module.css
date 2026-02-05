@@ -1,0 +1,207 @@
+.hero {
+  height: calc(100vh - var(--header-h));
+  background: #f6f6f6;
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.heroInner {
+  width: 100%;
+  height: 100%;
+  display: grid;
+
+  grid-template-columns: 1.2fr 0.8fr;
+  align-items: center;
+  /* gap: clamp(24px, 4vw, 84px); */
+}
+
+@media (max-width: 640px) {
+  .heroInner {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    padding-top: 12px;
+    min-width: 0;
+  }
+}
+
+.heroLeft {
+  transform: translateX(-20%);
+}
+
+
+.h1 {
+  margin: 0;
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  line-height: 1.02;
+
+  display: grid;
+  gap: 20px;
+  font-size: clamp(54px, 5.2vw, 96px);
+}
+
+.h1 span {
+  display: block;
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .h1 span {
+    white-space: normal;
+  }
+}
+
+
+.sub {
+  margin-top: 18px;
+  font-size: clamp(16px, 2.2vw, 60px);
+  color: #333;
+}
+
+.heroRight {
+  display: grid;
+  place-items: center;
+  justify-items: end;
+}
+
+.people {
+  width: min(800px, 46vw);
+  height: auto;
+  transform: translateX(-30%);
+  animation: slideInFromRight 1.2s ease-out forwards;
+}
+
+@keyframes slideInFromRight {
+  0% { transform: translateX(100px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+.downBtn {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  width: 74px;
+  height: 74px;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  background: rgba(255, 255, 255, 0.92);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+/* ===== second section ===== */
+.second {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.secondBg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.secondOverlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.secondContent {
+  text-align: center;
+  color: #fff;
+}
+
+.smallTitle {
+  margin: 0;
+  font-size: clamp(22px, 3vw, 100px);
+}
+
+.bigTitle {
+  margin: 8px 0 0;
+  font-size: clamp(34px, 4.6vw, 100px);
+}
+
+.line {
+  width: min(860px, 92vw);
+  height: 2px;
+  background: rgba(255, 255, 255, 0.65);
+  margin: 22px auto;
+}
+
+.startBtn {
+  height: 46px;
+  padding: 0 22px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.desc {
+  margin-top: 18px;
+  font-size: 16px;
+  opacity: 0.92;
+  line-height: 1.6;
+}
+
+/* =========================
+   Responsive (필수)
+========================= */
+
+/* 태블릿 이하: 2열 → 1열 */
+@media (max-width: 1024px) {
+  .heroInner {
+    grid-template-columns: 1fr;   /* ✅ 한 줄로 */
+    gap: 28px;
+    justify-items: center;        /* 가운데 정렬 */
+    text-align: center;
+  }
+
+  .heroLeft {
+    transform: none;              /* 왼쪽 밀던 거 해제 */
+  }
+
+  .heroRight {
+    justify-items: center;        /* 이미지도 가운데 */
+  }
+
+  .people {
+    width: min(560px, 82vw);      /* ✅ 화면에 맞게 줄임 */
+  }
+
+  .downBtn {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* 모바일: 제목 줄바꿈 허용 + 폰트/간격 더 줄임 */
+@media (max-width: 600px) {
+  .h1 {
+    font-size: clamp(34px, 9vw, 46px);
+    gap: 8px;
+  }
+
+  .h1 span {
+    white-space: normal;          /* ✅ 모바일에서는 nowrap 풀어야 함 */
+  }
+
+  .heroLeft p {
+    font-size: 16px;
+  }
+
+  .people {
+    width: min(420px, 90vw);
+  }
+}

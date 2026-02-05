@@ -1,0 +1,194 @@
+.page {
+  padding-top: 76px;
+  min-height: 100svh;
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
+}
+
+.wrap {
+  width: min(820px, 92vw);
+  padding: clamp(18px, 4vh, 40px) 0 80px;
+}
+
+/* 1) 타이틀 가운데 */
+.title {
+  margin: 0 0 22px;
+  text-align: center;
+  font-size: 44px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+/* 카드 */
+.card {
+  width: min(720px, 92vw);
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.06);
+  padding: clamp(20px, 3vw, 34px);
+}
+
+/* 전체 폼 레이아웃: 라벨(좌) + 입력영역(우) */
+.row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  align-items: center;
+  column-gap: 18px;
+  margin: 14px 0;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+}
+
+/* 공통 input/select */
+.input {
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
+  outline: none;
+  font-size: 14px;
+  width: 100%;
+  min-width: 0; /* ✅ grid 안에서 삐져나가는거 방지 */
+}
+.input:focus {
+  border-color: #8aa2ff;
+}
+
+.select {
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
+  background: #fff;
+  min-width: 0;
+}
+
+/* 2) 아이디 input == 비밀번호 input 너비로 만들기
+   field는 "고정 느낌의 반응형 폭" */
+.field {
+  width: min(360px, 52vw);
+}
+
+/* 아이디 + 중복확인 */
+.idGroup {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.dupBtn {
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 6px;
+  border: 1px solid #cfcfcf;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* 생년월일 */
+.birthGroup {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  width: min(300px, 58vw);
+}
+
+/* 성별 */
+.genderGroup {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+.radio {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 14px;
+}
+
+/* 휴대폰 */
+.phoneGroup {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  width: min(300px, 70vw);
+}
+.selectSmall {
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
+  background: #fff;
+}
+
+/* 3) 이메일/도메인 더 작게 + 화면 밖으로 안 나가게 */
+.emailGroup {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) 120px;
+  gap: 10px;
+  width: min(490px, 70vw);
+  align-items: center;
+}
+.at {
+  color: #777;
+  font-weight: 700;
+  padding: 0 2px;
+}
+.selectDomain {
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
+  background: #fff;
+  min-width: 0;
+}
+
+/* 제출 버튼 */
+.submit {
+  margin: 22px auto 0;
+  width: min(360px, 52vw);
+  height: 46px;
+  border-radius: 6px;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 800;
+  background: linear-gradient(90deg, #0f0f0f 0%, #3a55ff 100%);
+  display: grid;
+  place-items: center;
+}
+
+/* 모바일에서 라벨 위로 */
+@media (max-width: 720px) {
+  .row {
+    grid-template-columns: 1fr;
+    row-gap: 8px;
+  }
+  .label {
+    font-size: 13px;
+  }
+  .field,
+  .birthGroup,
+  .phoneGroup,
+  .emailGroup,
+  .submit {
+    width: 100%;
+  }
+  .emailGroup {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) 96px;
+  }
+}
