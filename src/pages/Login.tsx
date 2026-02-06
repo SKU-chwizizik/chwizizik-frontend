@@ -18,18 +18,27 @@ export default function Login() {
         <form className={styles.form} onSubmit={onSubmit}>
           <input className={styles.input} placeholder="아이디" />
           <input className={styles.input} placeholder="비밀번호" type="password" />
+        </form>
+        
+        <form>
+          <p></p>
 
-          <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">
+          <div className={styles.snsDivider}></div>
+          
+          <div className={styles.form}>
+            <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">
             로그인
           </button>
-        </form>
+          </div>
 
-        {/* ✅ form 밖이어도 폭 똑같이 맞추는 래퍼 */}
-        <div className={styles.form}>
-          <Link className={`${styles.btn} ${styles.btnGhost}`} to="/Signup">
-            회원가입
-          </Link>
-        </div>
+          <p></p>
+
+          <div className={styles.form}>
+            <Link className={`${styles.btn} ${styles.btnGhost}`} to="/Signup">
+              회원가입
+            </Link>
+          </div>
+        </form>
 
         <div className={styles.snsBlock}>
           <div className={styles.snsDivider}>
