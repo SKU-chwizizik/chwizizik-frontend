@@ -1,20 +1,23 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import styles from "./Login.module.css";
 
 const KAKAO_ICON_SRC = "/img/kakao_icon.png";
 const NAVER_ICON_SRC = "/img/naver_icon.png";
-const restApiKey = import.meta.env.VITE_KAKAO_REST_API_KEY;
-const redirectUri = import.meta.env.VITE_KAKAO_REDIRECT_URI;
-const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${restApiKey}&redirect_uri=${redirectUri}&response_type=code`;
-const handleKakaoLogin = () => {
-    window.location.href = KAKAO_AUTH_URL;
-};
 
 export default function Login() {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // TODO: 로그인 로직 연결
   };
+
+  const restApiKey = import.meta.env.VITE_KAKAO_REST_API_KEY;
+  const redirectUri = import.meta.env.VITE_KAKAO_REDIRECT_URI;
+  const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${restApiKey}&redirect_uri=${redirectUri}&response_type=code`;
+  const handleKakaoLogin = () => {
+    window.location.href = KAKAO_AUTH_URL;
+  
+};
 
   return (
     <main className={styles.page}>
