@@ -1,74 +1,48 @@
-import { Link } from "react-router-dom";
+import React from "react";
+import { Link} from "react-router-dom";
 import styles from "./Login.module.css";
 
+// 이미지 경로는 프로젝트에 맞게 확인하면 댐
 const KAKAO_ICON_SRC = "/img/kakao_icon.png";
 const NAVER_ICON_SRC = "/img/naver_icon.png";
-const restApiKey = import.meta.env.VITE_KAKAO_REST_API_KEY;
-const redirectUri = import.meta.env.VITE_KAKAO_REDIRECT_URI;
-const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${restApiKey}&redirect_uri=${redirectUri}&response_type=code`;
-const handleKakaoLogin = () => {
-    window.location.href = KAKAO_AUTH_URL;
-};
 
 export default function Login() {
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // TODO: 로그인 로직 연결
+  // .env 파일에서 값 가져오기
+  const restApiKey = import.meta.env.VITE_KAKAO_REST_API_KEY;
+  const redirectUri = import.meta.env.VITE_KAKAO_REDIRECT_URI;
+  
+  // 카카오 로그인 URL 만들기
+  const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${restApiKey}&redirect_uri=${redirectUri}&response_type=code`;
+
+  const handleKakaoLogin = () => {
+    // 카카오로 이동
+    window.location.href = KAKAO_AUTH_URL;
   };
 
   return (
     <main className={styles.page}>
       <div className={styles.wrap}>
         <h1 className={styles.title}>로그인</h1>
-
-        <form className={styles.form} onSubmit={onSubmit}>
-          <input className={styles.input} placeholder="아이디" />
-          <input className={styles.input} placeholder="비밀번호" type="password" />
-        </form>
         
-        <form>
-          <p></p>
-
-          <div className={styles.snsDivider}></div>
-          
-          <div className={styles.form}>
-            <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">
-            로그인
-          </button>
-          </div>
-
-          <p></p>
-
-          <div className={styles.form}>
-            <Link className={`${styles.btn} ${styles.btnGhost}`} to="/Signup">
-              회원가입
-            </Link>
-          </div>
+        {/* 기존 로그인 폼 (생략 가능) */}
+        <form className={styles.form}>
+           {/* ...아이디/비번 입력창들... */}
         </form>
 
         <div className={styles.snsBlock}>
-          <div className={styles.snsDivider}>
-            <span>SNS 간편 로그인</span>
-          </div>
-
           <div className={styles.snsButtons}>
+            {/* 카카오 버튼 */}
             <button 
               type="button" 
-                className={`${styles.snsBtn} ${styles.kakao}`}
-                onClick={handleKakaoLogin} // 클릭 시 카카오 로그인 페이지로 이동
-              >
-                <span className={styles.snsIconBox}>
-                  <img className={styles.snsIcon} src={KAKAO_ICON_SRC} alt="kakao" />
-                </span>
-                <span className={styles.snsText}>카카오 로그인</span>
-            </button>
-
-            <button type="button" className={`${styles.snsBtn} ${styles.naver}`}>
+              className={`${styles.snsBtn} ${styles.kakao}`}
+              onClick={handleKakaoLogin}
+            >
               <span className={styles.snsIconBox}>
-                <img className={styles.snsIcon} src={NAVER_ICON_SRC} alt="naver" />
+                <img className={styles.snsIcon} src={KAKAO_ICON_SRC} alt="kakao" />
               </span>
-              <span className={styles.snsText}>네이버 로그인</span>
+              <span className={styles.snsText}>카카오 로그인</span>
             </button>
+            {/* 네이버 버튼... */}
           </div>
         </div>
       </div>
