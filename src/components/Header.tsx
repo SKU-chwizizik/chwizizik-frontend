@@ -1,11 +1,12 @@
 // src/components/Header.tsx
 import { useState, useEffect } from "react"; // 1. 상태 관리 기능 추가
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import styles from "./Header.module.css";
 
 export default function Header() {
   const navigate = useNavigate();
-  
+  const location = useLocation();
+
   // 3. 화면이 켜질 때 딱 한 번 실행: "브라우저에 저장된 이름 있나?" 확인
   useEffect(() => {
     
@@ -13,7 +14,7 @@ export default function Header() {
     if (storedName) {
       setNickname(storedName); // 있으면 상자에 담기
     }
-  }, []);
+  }, [location]);
 
   // 4. 로그아웃 버튼 눌렀을 때 실행할 함수
   const handleLogout = () => {
