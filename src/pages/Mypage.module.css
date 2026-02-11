@@ -1,0 +1,353 @@
+.container {
+  min-height: 100vh;
+  background-color: #f6f6f6; 
+  padding-top: calc(var(--header-h) + 20px);
+  padding-bottom: 60px;
+}
+
+.wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  gap: 30px; 
+  padding: 0 20px;
+}
+
+/* --- 사이드바 스타일 --- */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  position: sticky;
+  top: calc(var(--header-h) + 20px); 
+  height: fit-content;
+}
+
+.menuTitle {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.menuList {
+  list-style: none;
+  padding: 0;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.menuItem {
+  padding: 15px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  transition: all 0.2s;
+  color: #666;
+}
+
+.menuItem.active {
+  background-color: #f0f4ff;
+  color: #3366ff; 
+  font-weight: 600;
+}
+
+/* --- 본문 콘텐츠 스타일 --- */
+.content {
+  flex-grow: 1;
+}
+
+.mainTitle {
+  font-size: 24px;
+  margin-bottom: 25px;
+  font-weight: 700;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 20px 20px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); 
+}
+
+/* --- 프로필 섹션 스타일 --- */
+.profileSection {
+  display: flex;
+  gap: 50px;
+  align-items: flex-start; /* 텍스트 모드일 때 정렬을 위해 수정 */
+  padding: 10px 0;
+}
+
+.imageUpload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  margin-left: 10px;
+}
+
+.imagePreview {
+  width: 160px;
+  height: 200px;
+  background-color: #f1f3f5;
+  border: 1px dashed #adb5bd;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #868e96;
+  overflow: hidden;
+}
+
+.previewImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.btnGroup {
+  display: flex;
+  gap: 8px;
+}
+
+/* --- 기본 정보 표시 및 수정 스타일 --- */
+.basicInfo {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; 
+}
+
+.infoField {
+  display: flex;
+  align-items: center;
+  min-height: 40px; /* 입력창과 텍스트의 높이 통일 */
+}
+
+.infoField label {
+  width: 100px; /* 이메일 등 긴 라벨 고려 */
+  font-weight: 600;
+  color: #495057;
+}
+
+/* 텍스트 모드 스타일 */
+.infoText {
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* 수정 모드 입력창 스타일 */
+.editInput {
+  width: 100%;
+  max-width: 320px;
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.editInput:focus {
+  border-color: #3366ff;
+}
+
+/* 버튼 스타일들 */
+.actionBtns {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.saveBtn {
+  background-color: #3366ff;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancelBtn {
+  background-color: #e9ecef;
+  color: #495057;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.uploadBtn {
+  font-size: 13px;
+  color: #3366ff;
+  cursor: pointer;
+  padding: 6px 12px;
+  border: 1px solid #3366ff;
+  border-radius: 4px;
+}
+
+.deleteBtn {
+  font-size: 13px;
+  color: #ff4d4f;
+  cursor: pointer;
+  padding: 6px 12px;
+  border: 1px solid #ff4d4f;
+  border-radius: 4px;
+  background: #fff;
+}
+
+/* --- 학력, 자격증 등 공통 스타일 --- */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 1px;
+}
+
+.editBtn {
+  background: none;
+  border: 1px solid #ddd;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.infoRow {
+  display: flex;
+  margin-bottom: 15px;
+}
+
+.label {
+  width: 120px;
+  color: #888;
+}
+
+.value {
+  color: #333;
+  font-weight: 500;
+}
+
+.tagGroup {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: #f1f3f5;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+}
+
+.tagDelete {
+  cursor: pointer;
+  color: #ff4d4f;
+  font-weight: bold;
+  font-size: 12px;
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.tagDelete:hover {
+  transform: scale(1.2);
+}
+
+/* 입력창이 나타날 때의 애니메이션이나 간격 */
+.certInputBox {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fileBox {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.fileDelete {
+  color: #ff4d4f;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.fileList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fileItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.fileName {
+  font-size: 14px;
+  color: #333;
+}
+
+.fileDeleteIcon {
+  color: #ff4d4f;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 0 5px;
+}
+
+.fileDeleteIcon:hover {
+  color: #d32f2f;
+}
+
+.emptyText {
+  color: #999;
+  font-size: 14px;
+  text-align: center;
+  padding: 20px 0;
+}
+
+/* 수정 모드 드롭다운(목차) 스타일 */
+.editSelect {
+  width: 100%;
+  max-width: 320px;
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 15px;
+  outline: none;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  
+  /* 브라우저 기본 화살표 커스텀 */
+  appearance: none; 
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 12px) center;
+  padding-right: 30px; /* 화살표 공간 확보 */
+}
+
+.editSelect:focus {
+  border-color: #3366ff;
+}
