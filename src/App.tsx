@@ -7,6 +7,7 @@ import KakaoAuth from "./pages/KakaoAuth";
 import Welcome from "./pages/Welcome";
 import Portfolio from "./pages/Portfolio";
 import Mypage from "./pages/Mypage";
+import AiSelect from "./pages/Aiselect";  
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/portfolio" element={<Portfolio />} />
         <Route path="/mypage" element={<Mypage />} />
+        <Route path="/ai-select" element={<AiSelect />} />
       </Routes>
     </>
   );

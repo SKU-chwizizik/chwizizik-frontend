@@ -43,7 +43,7 @@ export default function Header() {
         {/* 오른쪽: 메뉴 + 로그인 / 로그아웃 */}
         <nav className={styles.right}>
           <NavLink to="/" className={styles.link}>HOME</NavLink>
-          <NavLink to="/ai" className={styles.link}>AI 면접관</NavLink>
+          <NavLink to="/ai-select" className={styles.link}>AI 면접관</NavLink>
           <NavLink to="/mypage" className={styles.link}>마이페이지</NavLink>
           {nickname ? (
             // [로그인 상태일 때] : 닉네임 + 로그아웃 버튼 표시
