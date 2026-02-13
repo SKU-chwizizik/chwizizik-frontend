@@ -7,14 +7,25 @@ export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // 2. 닉네임을 저장할 상자(State) 만들기 (처음엔 비어있음)
+  const [nickname, setNickname] = useState<string | null>(null);
+
   // 3. 화면이 켜질 때 딱 한 번 실행: "브라우저에 저장된 이름 있나?" 확인
   useEffect(() => {
-    
     const storedName = localStorage.getItem("nickname");
     if (storedName) {
       setNickname(storedName); // 있으면 상자에 담기
     }
   }, [location]);
+
+  // [추가] 로그인 체크 후 페이지 이동을 제어하는 핸들러
+  const handleProtectedNavigation = (e: React.MouseEvent, path: string) => {
+    if (!nickname) {
+      e.preventDefault(); // 로그인이 안 되어 있으면 페이지 이동을 막음
+      alert("로그인 후 이용 가능합니다.");
+      navigate("/login"); // 로그인 창으로 redirect
+    }
+  };
 
   // 4. 로그아웃 버튼 눌렀을 때 실행할 함수
   const handleLogout = () => {
@@ -28,9 +39,6 @@ export default function Header() {
     window.location.href = kakaoLogoutUrl;
   };
 
-  // 2. 닉네임을 저장할 상자(State) 만들기 (처음엔 비어있음)
-  const [nickname, setNickname] = useState<string | null>(null);
-
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
@@ -43,8 +51,25 @@ export default function Header() {
         {/* 오른쪽: 메뉴 + 로그인 / 로그아웃 */}
         <nav className={styles.right}>
           <NavLink to="/" className={styles.link}>HOME</NavLink>
-          <NavLink to="/ai-select" className={styles.link}>AI 면접관</NavLink>
-          <NavLink to="/mypage" className={styles.link}>마이페이지</NavLink>
+          
+          {/* AI 면접관: 로그인 체크 로직 추가 */}
+          <NavLink 
+            to="/ai-select" 
+            className={styles.link}
+            onClick={(e) => handleProtectedNavigation(e, "/ai-select")}
+          >
+            AI 면접관
+          </NavLink>
+
+          {/* 마이페이지: 로그인 체크 로직 추가 */}
+          <NavLink 
+            to="/mypage" 
+            className={styles.link}
+            onClick={(e) => handleProtectedNavigation(e, "/mypage")}
+          >
+            마이페이지
+          </NavLink>
+
           {nickname ? (
             // [로그인 상태일 때] : 닉네임 + 로그아웃 버튼 표시
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
