@@ -132,6 +132,11 @@
   color: #495057;
 }
 
+.placeholder {
+  color: #a0a0a0; /* 연한 회색 */
+  font-style: italic;
+}
+
 /* 텍스트 모드 스타일 */
 .infoText {
   font-size: 16px;

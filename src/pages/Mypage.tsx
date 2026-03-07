@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './Mypage.module.css';
-// 별도로 만든 컴포넌트 임포트
 import InterviewRecords from './InterviewRecords'; 
+import axios from 'axios';
 
 // 0. 학력 타입 정의
 type Education =
@@ -30,18 +30,19 @@ const Mypage = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [userInfo, setUserInfo] = useState({
-    name: '홍길동',
-    phone: '010-1234-5678',
-    email: 'hong@example.com',
-    jobField: '프론트엔드 개발자'
+    name: '',
+    userId: '',
+    phone: '',
+    email: '',
+    jobField: ''
   });
 
   // 3. 학력 정보 상태
   const [isEduEditing, setIsEduEditing] = useState(false);
   const [eduInfo, setEduInfo] = useState({
-    level: "대학(4년) 졸업" as Education,
-    school: "한국대학교",
-    major: "컴퓨터공학과"
+    level: "",
+    school: "",
+    major: ""
   });
 
   const eduOptions: Education[] = [
@@ -57,7 +58,6 @@ const Mypage = () => {
 
   // 5. 파일 정보 상태
   const [files, setFiles] = useState<AttachedFile[]>([
-    { id: Date.now(), name: "홍길동_자기소개서.pdf" }
   ]);
 
   // --- 핸들러 영역 ---
@@ -85,26 +85,74 @@ const Mypage = () => {
     setEduInfo(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
-    alert('기본 정보가 저장되었습니다.');
-    setIsEditing(false);
-  };
+  const handleSave = async() => {
+    try {
+    // 1. 서버 API 호출 (백엔드 엔드포인트 예시: /api/user/profile)
+    const response = await axios.patch('/api/user/profile', {
+      name: userInfo.name,
+      phone: userInfo.phone,
+      email: userInfo.email,
+      jobField: userInfo.jobField
+    });
 
-  const handleEduSave = () => {
-    alert('학력 정보가 저장되었습니다.');
-    setIsEduEditing(false);
-  };
+    if (response.status === 200) {
+      alert('기본 정보가 DB에 저장되었습니다.');
+      setIsEditing(false);
+    }
+  } catch (error) {
+    console.error("저장 실패:", error);
+    alert('서버 저장 중 오류가 발생했습니다.');
+  }
+};
 
-  const handleAddCert = () => {
+  const handleEduSave = async() => {
+    try {
+      await axios.patch('/api/user/education', eduInfo);
+      alert('학력 정보가 DB에 저장되었습니다.');
+      setIsEduEditing(false);
+  } catch (error) {
+    alert('저장 실패');
+  }
+};
+
+  const handleAddCert = async() => {
     if (certInput.trim() === "") return;
-    setCertificates(prev => [...prev, certInput]);
-    setCertInput("");
-    setIsCertEditing(false);
-  };
+    try {
+    // 1. 백엔드 API 호출 (예시 엔드포인트: /api/user/certificates)
+    // 현재 로그인된 사용자의 ID와 입력한 자격증 명칭을 보냅니다.
+    const response = await axios.post('/api/user/certificates', {
+      certName: certInput,
+      userId: userInfo.userId // 현재 로그인한 사용자 ID
+    });
 
-  const handleDeleteCert = (index: number) => {
+    if (response.status === 200) {
+      // 2. 서버 저장 성공 시 화면(State) 업데이트
+      setCertificates(prev => [...prev, certInput]);
+      setCertInput("");
+      setIsCertEditing(false);
+      alert('자격증이 성공적으로 등록되었습니다.');
+    }
+  } catch (error) {
+    console.error("자격증 저장 실패:", error);
+    alert('자격증 등록 중 오류가 발생했습니다.');
+  }
+};
+
+  const handleDeleteCert = async (index: number, certName: string) => {
+  if (!window.confirm(`'${certName}' 자격증을 삭제하시겠습니까?`)) return;
+
+  try {
+    // 백엔드에 삭제 요청 (명칭이나 ID 기반)
+    await axios.delete(`/api/user/certificates`, {
+      data: { certName: certName, userId: userInfo.userId }
+    });
+
+    // 성공 시 화면에서 제거
     setCertificates(prev => prev.filter((_, i) => i !== index));
-  };
+  } catch (error) {
+    alert('삭제에 실패했습니다.');
+  }
+};
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -169,10 +217,10 @@ const Mypage = () => {
                   </div>
 
                   <div className={styles.basicInfo}>
-                    <div className={styles.infoField}><label>이름</label>{isEditing ? <input name="name" value={userInfo.name} onChange={handleInputChange} className={styles.editInput} /> : <span className={styles.infoText}>{userInfo.name}</span>}</div>
-                    <div className={styles.infoField}><label>전화번호</label>{isEditing ? <input name="phone" value={userInfo.phone} onChange={handleInputChange} className={styles.editInput} /> : <span className={styles.infoText}>{userInfo.phone}</span>}</div>
-                    <div className={styles.infoField}><label>이메일</label>{isEditing ? <input name="email" value={userInfo.email} onChange={handleInputChange} className={styles.editInput} /> : <span className={styles.infoText}>{userInfo.email}</span>}</div>
-                    <div className={styles.infoField}><label>희망 분야</label>{isEditing ? <input name="jobField" value={userInfo.jobField} onChange={handleInputChange} className={styles.editInput} /> : <span className={styles.infoText}>{userInfo.jobField}</span>}</div>
+                    <div className={styles.infoField}><label>이름</label>{isEditing ? (<input name="name" value={userInfo.name} onChange={handleInputChange} placeholder="홍길동" className={styles.editInput} /> ) : ( <span className={userInfo.name ? styles.infoText : styles.placeholder}>{userInfo.name || "홍길동"}</span>)}</div>
+                    <div className={styles.infoField}><label>전화번호</label>{isEditing ? (<input name="phone" value={userInfo.phone} onChange={handleInputChange} placeholder="010-1234-5678" className={styles.editInput} /> ) : ( <span className={userInfo.phone ? styles.infoText : styles.placeholder}>{userInfo.phone || "010-1234-5678"}</span>)}</div>
+                    <div className={styles.infoField}><label>이메일</label>{isEditing ? (<input name="email" value={userInfo.email} onChange={handleInputChange} placeholder="example@example.com" className={styles.editInput} /> ) : ( <span className={userInfo.email ? styles.infoText : styles.placeholder}>{userInfo.email || "example@example.com"}</span>)}</div>
+                    <div className={styles.infoField}><label>희망 분야</label>{isEditing ? (<input name="jobField" value={userInfo.jobField} onChange={handleInputChange} placeholder="프론트엔드 개발자" className={styles.editInput} /> ) : ( <span className={userInfo.jobField ? styles.infoText : styles.placeholder}>{userInfo.jobField || "프론트엔드 개발자"}</span>)}</div>
                     <div className={styles.actionBtns}>
                       {isEditing ? <><button onClick={handleSave} className={styles.saveBtn}>저장하기</button><button onClick={() => setIsEditing(false)} className={styles.cancelBtn}>취소</button></> : <button onClick={() => setIsEditing(true)} className={styles.saveBtn}>정보 수정하기</button>}
                     </div>
@@ -195,32 +243,48 @@ const Mypage = () => {
                         {eduOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
                       </select>
                     </div>
-                    <div className={styles.infoField}><label>학교명</label><input name="school" value={eduInfo.school} onChange={handleEduChange} className={styles.editInput} /></div>
-                    <div className={styles.infoField}><label>전공</label><input name="major" value={eduInfo.major} onChange={handleEduChange} className={styles.editInput} /></div>
-                    <div className={styles.actionBtns}><button onClick={handleEduSave} className={styles.saveBtn}>저장</button><button onClick={() => setIsEduEditing(false)} className={styles.cancelBtn}>취소</button></div>
+                    <div className={styles.infoField}>
+                      <label>학교명</label>
+                      <input 
+                        name="school" 
+                        value={eduInfo.school} 
+                        onChange={handleEduChange} 
+                        placeholder="한국대학교" 
+                        className={styles.editInput} 
+                      />
+                    </div>
+                    <div className={styles.infoField}>
+                      <label>전공</label>
+                      <input 
+                        name="major" 
+                        value={eduInfo.major} 
+                        onChange={handleEduChange} 
+                        placeholder="컴퓨터공학과" 
+                        className={styles.editInput} 
+                      />
+                    </div>
+                    <div className={styles.actionBtns}>
+                      <button onClick={handleEduSave} className={styles.saveBtn}>저장</button>
+                      <button onClick={() => setIsEduEditing(false)} className={styles.cancelBtn}>취소</button>
+                    </div>
                   </div>
                 ) : (
-                  <><div className={styles.infoRow}><span className={styles.label}>최종학력</span><span className={styles.value}>{eduInfo.level}</span></div><div className={styles.infoRow}><span className={styles.label}>학교명 / 전공</span><span className={styles.value}>{eduInfo.school} / {eduInfo.major}</span></div></>
-                )}
-              </section>
-
-              {/* 섹션 3: 자격증 */}
-              <section className={styles.card}>
-                <div className={styles.cardHeader}>
-                  <h3>자격증</h3>
-                  {!isCertEditing && <button className={styles.editBtn} onClick={() => setIsCertEditing(true)}>추가</button>}
-                </div>
-                <div className={styles.tagGroup}>
-                  {certificates.map((cert, index) => (
-                    <span key={index} className={styles.tag}>{cert} <span className={styles.tagDelete} onClick={() => handleDeleteCert(index)}>✕</span></span>
-                  ))}
-                </div>
-                {isCertEditing && (
-                  <div className={styles.certInputBox} style={{marginTop: '15px', display: 'flex', gap: '10px'}}>
-                    <input type="text" value={certInput} onChange={(e) => setCertInput(e.target.value)} placeholder="자격증 명칭 입력" className={styles.editInput} onKeyPress={(e) => e.key === 'Enter' && handleAddCert()} />
-                    <button onClick={handleAddCert} className={styles.saveBtn}>등록</button>
-                    <button onClick={() => setIsCertEditing(false)} className={styles.cancelBtn}>취소</button>
-                  </div>
+                  <>
+                    <div className={styles.infoRow}>
+                      <span className={styles.label}>최종학력</span>
+                      <span className={eduInfo.level ? styles.value : styles.placeholder}>
+                        {eduInfo.level || "대학(4년) 졸업"}
+                      </span>
+                    </div>
+                    <div className={styles.infoRow}>
+                      <span className={styles.label}>학교명 / 전공</span>
+                      <span className={(eduInfo.school || eduInfo.major) ? styles.value : styles.placeholder}>
+                        {eduInfo.school && eduInfo.major 
+                          ? `${eduInfo.school} / ${eduInfo.major}` 
+                          : "한국대학교 / 컴퓨터공학과"}
+                      </span>
+                    </div>
+                  </>
                 )}
               </section>
 
