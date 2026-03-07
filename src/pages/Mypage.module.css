@@ -38,18 +38,60 @@
   overflow: hidden;
 }
 
+/* 부모 메뉴 (모의 면접 기록 보관 등) */
 .menuItem {
   padding: 15px 20px;
   cursor: pointer;
   border-bottom: 1px solid #eee;
   transition: all 0.2s;
   color: #666;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menuItem:hover {
+  background-color: #f8f9fa;
 }
 
 .menuItem.active {
   background-color: #f0f4ff;
   color: #3366ff; 
   font-weight: 600;
+}
+
+/* --- 자식 메뉴 스타일 추가 --- */
+
+/* 자식 메뉴들을 감싸는 영역 */
+.subMenuContainer {
+  background-color: #fcfcfc; /* 부모보다 약간 연한 배경 */
+  border-bottom: 1px solid #eee;
+}
+
+/* 자식 메뉴 버튼 (직무 면접, 일반 면접) */
+.subMenuItem {
+  padding: 12px 20px 12px 45px; /* 왼쪽 패딩 45px로 들여쓰기 확실히 함 */
+  font-size: 14px;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 1px solid #f9f9f9;
+}
+
+.subMenuItem:last-child {
+  border-bottom: none;
+}
+
+.subMenuItem:hover {
+  color: #3366ff;
+  background-color: #f0f4ff;
+}
+
+/* 자식 메뉴가 선택되었을 때 */
+.subMenuItem.active {
+  color: #3366ff;
+  font-weight: 600;
+  background-color: #f0f4ff;
 }
 
 /* --- 본문 콘텐츠 스타일 --- */
