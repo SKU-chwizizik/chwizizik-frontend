@@ -27,7 +27,8 @@
 }
 
 .heroLeft {
-  transform: translateX(-20%);
+  transform: translateX(-5%);
+  transform: translatey(10%);
 }
 
 
@@ -57,6 +58,7 @@
 .sub {
   margin-top: 18px;
   font-size: clamp(16px, 2.2vw, 60px);
+  transform: translateX(1.2%);
   color: #333;
 }
 
