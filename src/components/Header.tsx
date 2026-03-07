@@ -68,10 +68,8 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        {/* 왼쪽: 로고 */}
         <div className={styles.logo} onClick={() => navigate("/")}>
-          <img src="/img/logo.png" alt="logo" />
-          <span>취지직</span>
+          <span>CZZ</span>
         </div>
 
         {/* 오른쪽: 메뉴 + 로그인 / 로그아웃 */}
