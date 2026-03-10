@@ -36,7 +36,7 @@ export default function InterviewerSelect() {
           "Evaluates culture fit, long-term growth potential, leadership",
         ],
         // 프로젝트 이미지 경로로 바꿔줘 (public 폴더 기준)
-        imgSrc: "/img/man.png",
+        imgSrc: "/img/man.png", //
       },
       {
         id: "job",
@@ -52,7 +52,7 @@ export default function InterviewerSelect() {
           "Assesses role expertise and practical execution",
           "Focus on collaboration, problem-solving, project experience",
         ],
-        imgSrc: "/img/woman.png",
+        imgSrc: "/img/woman.png", //
       },
     ],
     []
@@ -63,14 +63,14 @@ export default function InterviewerSelect() {
   const onStart = () => {
     if (!selected) return;
 
-    // TODO: 여기서 라우팅/상태 저장하면 됨
-    // 예: navigate(`/interview?type=${selected}&lang=${lang}`);
-    alert(`Start interview: type=${selected}, lang=${lang}`);
+    const url = `/interview/room?type=${selected}&lang=${lang}`;
+
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   return (
     <div className={styles.page}>
-      {/* 상단 네비(프로젝트 헤더 컴포넌트 있으면 교체) */}
+    {/* 상단 네비(프로젝트 헤더 컴포넌트 있으면 교체) */}
       <header className={styles.header}>
         <div className={styles.brand}>
           <div className={styles.logoBox} aria-hidden="true">
@@ -87,13 +87,12 @@ export default function InterviewerSelect() {
             AI 면접관
           </a>
           <a className={styles.navItem} href="#">
-            마이페이지
-          </a>
+            마이페이지</a>
         </nav>
 
         <button className={styles.logout} type="button">
           로그아웃
-        </button>
+          </button>
       </header>
 
       <main className={styles.main}>

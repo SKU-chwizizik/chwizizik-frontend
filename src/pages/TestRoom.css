@@ -1,0 +1,128 @@
+.test-room-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 64px); 
+  width: 100%;
+  background-color: #ffffff;
+  position: relative;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.test-room-header {
+  padding: 15px 20px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+.test-room-chatWindow {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px; /* 말풍선 사이 간격 */
+  background-color: #f8f9fa;
+}
+
+/* 면접관(AI) 행 정렬 */
+.test-room-aiRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  align-self: flex-start;
+}
+
+/* 면접관 정보(이름 + 아바타) */
+.test-room-interviewer-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.test-room-interviewer-name {
+  font-size: 11px;
+  font-weight: bold;
+  color: #666;
+}
+
+.test-room-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background-color: #fff;
+}
+
+/* 유저 행 정렬 (오른쪽 정렬로 삐뚤빼뚤 해결) */
+.test-room-userRow {
+  display: flex;
+  justify-content: flex-end; /* 가로 끝 정렬 */
+  align-self: flex-end;      /* 전체 레이아웃에서 오른쪽 배치 */
+  width: 100%;
+}
+
+.test-room-bubble {
+  max-width: 70%;
+  padding: 12px 18px;
+  border-radius: 18px;
+  font-size: 15px;
+  line-height: 1.6;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  word-break: break-word;
+}
+
+.test-room-aiRow .test-room-bubble {
+  background-color: #ffffff;
+  color: #333;
+  border-top-left-radius: 2px;
+  border: 1px solid #eef0f2;
+}
+
+/* 유저 말풍선 스타일 */
+.test-room-userRow .test-room-bubble {
+  background-color: #007bff;
+  color: #ffffff;
+  border-top-right-radius: 2px;
+}
+
+.test-room-loading {
+  font-size: 13px;
+  color: #888;
+  margin-left: 54px;
+  font-style: italic;
+}
+
+.test-room-inputArea {
+  padding: 20px;
+  background-color: #ffffff;
+  display: flex;
+  gap: 12px;
+  border-top: 1px solid #eee;
+}
+
+.test-room-inputArea input {
+  flex: 1;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+}
+
+.test-room-inputArea button {
+  padding: 0 25px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.test-room-inputArea button:hover {
+  background-color: #0056b3;
+}
