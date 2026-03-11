@@ -193,7 +193,7 @@ export default function Signup() {
           </div>
 
           {/* 생년월일 */}
-          <div className={styles.row}>
+          {/* <div className={styles.row}>
             <label className={styles.label}>생년월일</label>
             <div className={styles.cell}>
               <div className={styles.birthGroup}>
@@ -211,10 +211,10 @@ export default function Signup() {
                 </select>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* 성별 */}
-          <div className={styles.row}>
+          {/* <div className={styles.row}>
             <label className={styles.label}>성별</label>
             <div className={styles.cell}>
               <div className={styles.genderGroup}>
@@ -226,7 +226,7 @@ export default function Signup() {
                 </label>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* 휴대폰 번호 */}
           <div className={styles.row}>
