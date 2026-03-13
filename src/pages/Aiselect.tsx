@@ -36,11 +36,7 @@ export default function InterviewerSelect() {
           "Focuses on cultural fit, communication, and growth potential",
         ],
         // 프로젝트 이미지 경로로 바꿔줘 (public 폴더 기준)
-<<<<<<< Updated upstream
-        imgSrc: "/img/man.png",
-=======
         imgSrc: "/img/woman.png", //
->>>>>>> Stashed changes
       },
       {
         id: "job",
@@ -56,11 +52,7 @@ export default function InterviewerSelect() {
           "Evaluates technical skills and practical understanding",
           "Focuses on code design, problem solving, and project experience",
         ],
-<<<<<<< Updated upstream
-        imgSrc: "/img/woman.png",
-=======
         imgSrc: "/img/man.png", //
->>>>>>> Stashed changes
       },
     ],
     []
