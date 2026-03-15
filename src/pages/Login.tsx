@@ -1,15 +1,45 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
+import { loginUser } from "../api/auth";
 
 const KAKAO_ICON_SRC = "/img/kakao_icon.png";
 const NAVER_ICON_SRC = "/img/naver_icon.png";
 
 export default function Login() {
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // TODO: 로그인 로직 연결
-  };
+  const navigate = useNavigate(); // 2. 페이지 이동을 위한 hook
+
+  // 3. 입력값을 저장할 State
+  const [userId, setUserId] = useState("");
+  const [password, setPassword] = useState("");
+  
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  // 1. 입력값 검증
+  if (!userId || !password) {
+    alert("아이디와 비밀번호를 입력해주세요.");
+    return;
+  }
+
+  try {
+    // 2. auth.ts에 정의한 loginUser 호출
+    // loginData는 DTO 필드명(userId, password)과 일치해야 함
+    const data = await loginUser({ userId, password });
+    
+    console.log("로그인 응답:", data);
+    alert("로그인 성공!");
+
+    // 3. 메인 페이지나 대시보드로 이동
+    navigate("/"); 
+    
+  } catch (error: any) {
+    // 백엔드에서 보낸 에러 메시지(401 등) 처리
+    const errorMsg = error.response?.data || "로그인에 실패했습니다.";
+    alert(errorMsg);
+    console.error("Login Error:", error);
+  }
+};
 
   const restApiKey = import.meta.env.VITE_KAKAO_REST_API_KEY;
   const redirectUri = import.meta.env.VITE_KAKAO_REDIRECT_URI;
