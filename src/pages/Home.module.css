@@ -10,34 +10,20 @@
   width: 100%;
   height: 100%;
   display: grid;
-
   grid-template-columns: 1.2fr 0.8fr;
   align-items: center;
-  /* gap: clamp(24px, 4vw, 84px); */
-}
-
-@media (max-width: 640px) {
-  .heroInner {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    text-align: center;
-    padding-top: 12px;
-    min-width: 0;
-  }
 }
 
 .heroLeft {
-  transform: translateX(-5%);
-  transform: translatey(10%);
+  /* 기존 엉켰던 transform 합침 */
+  transform: translate(-5%, 10%);
 }
-
 
 .h1 {
   margin: 0;
   font-weight: 900;
   letter-spacing: -1.5px;
   line-height: 1.02;
-
   display: grid;
   gap: 20px;
   font-size: clamp(54px, 5.2vw, 96px);
@@ -47,13 +33,6 @@
   display: block;
   white-space: nowrap;
 }
-
-@media (max-width: 520px) {
-  .h1 span {
-    white-space: normal;
-  }
-}
-
 
 .sub {
   margin-top: 18px;
@@ -93,12 +72,14 @@
   cursor: pointer;
   display: grid;
   place-items: center;
+  z-index: 10;
 }
 
 /* ===== second section ===== */
 .second {
   position: relative;
   height: 100vh;
+  width: 100%;
   overflow: hidden;
 }
 
@@ -113,97 +94,97 @@
 .secondOverlay {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* 전체 콘텐츠를 화면 중앙에 배치 */
+  background: rgba(0, 0, 0, 0.2); /* 배경 이미지 대비를 위해 살짝 어둡게 */
 }
 
 .secondContent {
   text-align: center;
   color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .smallTitle {
   margin: 0;
-  font-size: clamp(22px, 3vw, 100px);
+  font-size: clamp(20px, 2.5vw, 26px);
+  font-weight: 500;
 }
 
 .bigTitle {
-  margin: 8px 0 0;
-  font-size: clamp(34px, 4.6vw, 100px);
-}
-
-.line {
-  width: min(860px, 92vw);
-  height: 2px;
-  background: rgba(255, 255, 255, 0.65);
-  margin: 22px auto;
-}
-
-.startBtn {
-  height: 46px;
-  padding: 0 22px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  background: rgba(0, 0, 0, 0.25);
-  color: #fff;
-  cursor: pointer;
+  margin: 12px 0 0;
+  font-size: clamp(32px, 4.2vw, 58px);
   font-weight: 800;
 }
 
+.line {
+  width: min(800px, 88vw);
+  height: 2px;
+  background: rgba(255, 255, 255, 0.65);
+  margin: 24px auto;
+}
+
+/* ✅ 버튼 스타일: 화이트 바탕 + 중앙보다 아래 배치 */
+.startBtn {
+  margin-top: 40px; /* 제목/라인 뭉치에서 아래로 더 밀어냄 */
+  height: clamp(60px, 7vw, 76px);
+  padding: 0 50px;
+  font-size: clamp(18px, 2.2vw, 24px);
+  border-radius: 14px;
+  border: none;
+  background: #ffffff;
+  color: #000000;
+  cursor: pointer;
+  font-weight: 800;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.startBtn:hover {
+  background: #f8f8f8;
+  transform: scale(1.05) translateY(-3px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+/* ✅ 하단 글자: 바닥 쪽으로 더 당김 */
 .desc {
-  margin-top: 18px;
-  font-size: 16px;
-  opacity: 0.92;
-  line-height: 1.6;
+  position: absolute;
+  bottom: 30px; /* 바닥에서 30px (더 내림) */
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: clamp(14px, 1.4vw, 17px);
+  opacity: 0.85;
+  line-height: 1.7;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+  letter-spacing: -0.5px;
 }
 
 /* =========================
-   Responsive (필수)
+   Responsive
 ========================= */
 
-/* 태블릿 이하: 2열 → 1열 */
 @media (max-width: 1024px) {
   .heroInner {
-    grid-template-columns: 1fr;   /* ✅ 한 줄로 */
-    gap: 28px;
-    justify-items: center;        /* 가운데 정렬 */
+    grid-template-columns: 1fr;
+    gap: 40px;
     text-align: center;
   }
-
-  .heroLeft {
-    transform: none;              /* 왼쪽 밀던 거 해제 */
-  }
-
-  .heroRight {
-    justify-items: center;        /* 이미지도 가운데 */
-  }
-
-  .people {
-    width: min(560px, 82vw);      /* ✅ 화면에 맞게 줄임 */
-  }
-
-  .downBtn {
-    left: 50%;
-    transform: translateX(-50%);
-  }
+  .heroLeft { transform: none; }
+  .heroRight { justify-items: center; }
+  .people { width: min(500px, 80vw); transform: none; }
 }
 
-/* 모바일: 제목 줄바꿈 허용 + 폰트/간격 더 줄임 */
-@media (max-width: 600px) {
-  .h1 {
-    font-size: clamp(34px, 9vw, 46px);
-    gap: 8px;
-  }
-
-  .h1 span {
-    white-space: normal;          /* ✅ 모바일에서는 nowrap 풀어야 함 */
-  }
-
-  .heroLeft p {
-    font-size: 16px;
-  }
-
-  .people {
-    width: min(420px, 90vw);
-  }
+@media (max-width: 640px) {
+  .heroInner { padding-top: 40px; }
+  .h1 { font-size: clamp(36px, 10vw, 50px); }
+  .h1 span { white-space: normal; }
+  .line { width: 90%; }
+  .startBtn { height: 56px; padding: 0 35px; }
+  .desc { bottom: 20px; padding: 0 20px; }
 }
