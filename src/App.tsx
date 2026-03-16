@@ -8,6 +8,8 @@ import Welcome from "./pages/Welcome";
 import Portfolio from "./pages/Portfolio";
 import Mypage from "./pages/Mypage";
 import AiSelect from "./pages/Aiselect";  
+import InterviewExec from "./pages/InterviewExec";
+import InterviewTech from "./pages/InterviewTech";
 
 export default function App() {
   return (
@@ -19,9 +21,11 @@ export default function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/kakao/auth-code" element={<KakaoAuth />} />
         <Route path="/welcome" element={<Welcome />} />
-        <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/portfolio" element={<Portfolio />} /> 
         <Route path="/mypage" element={<Mypage />} />
         <Route path="/ai-select" element={<AiSelect />} />
+        <Route path="/interview/executive" element={<InterviewExec />} />
+        <Route path="/interview/technical" element={<InterviewTech />} />
       </Routes>
     </>
   );
