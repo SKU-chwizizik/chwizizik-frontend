@@ -6,6 +6,9 @@ export default function InterviewExec() {
   const [searchParams] = useSearchParams();
   const lang = searchParams.get("lang");
 
+  // public/img 폴더 안에 있으므로 경로에 /img/를 추가합니다.
+  const interviewerImg = "/img/InterviewerExec.png"; 
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -18,14 +21,21 @@ export default function InterviewExec() {
 
       <main className={styles.main}>
         <div className={styles.interviewStage}>
+          {/* 면접관 사진 영역 */}
           <div className={styles.interviewerSpace}>
-            <p>{lang === "ko" ? "임원 면접관 사진 영역" : "Executive Interviewer Area"}</p>
+            <img 
+              src={interviewerImg} 
+              alt="Executive Interviewer" 
+              className={styles.interviewerImage} 
+            />
           </div>
 
+          {/* 사용자 카메라 영역 */}
           <div className={styles.userCamera}>
             <p>User Camera</p>
           </div>
 
+          {/* 하단 질문 바 */}
           <footer className={styles.questionBar}>
             <p className={styles.questionText}>
               {lang === "ko" 

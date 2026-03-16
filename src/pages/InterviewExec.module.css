@@ -20,12 +20,6 @@
   align-items: center;
 }
 
-.category {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
 .title {
   font-size: 24px;
   font-weight: 800;
@@ -35,7 +29,7 @@
 
 .main {
   width: 95%;
-  max-width: 1200px; 
+  max-width: 1200px; /* 원래의 넉넉한 크기로 복구 */
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -48,12 +42,12 @@
   width: 100%;
   aspect-ratio: 16 / 9; 
   max-height: calc(100vh - 220px); 
-  background-color: #e9ecef;
+  background-color: #e9ecef; /* 원래의 큼직한 회색 배경 */
   border-radius: 20px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
   display: flex;
-  justify-content: center;
-  align-items: center; 
+  justify-content: center; /* 사진 가로 중앙 */
+  align-items: center;     /* 사진 세로 중앙 */
   overflow: hidden;
   margin: 0 auto;
 }
@@ -64,11 +58,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #adb5bd;
-  font-size: 1.2rem;
-  font-weight: 500;
 }
 
+.interviewerImage {
+  width: auto;      /* 너비는 자동으로 비율 유지 */
+  height: 90%;    
+  object-fit: contain; 
+  display: block;
+}
+
+/* 이하 userCamera, questionBar 등은 원래 크기 유지 */
 .userCamera {
   position: absolute;
   top: 25px;
@@ -96,6 +95,7 @@
   border-radius: 12px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
   text-align: center;
+  z-index: 11;
 }
 
 .questionText {
@@ -105,5 +105,4 @@
   margin: 0;
   line-height: 1.4;
   word-break: keep-all;
-  letter-spacing: -0.5px;
 }
