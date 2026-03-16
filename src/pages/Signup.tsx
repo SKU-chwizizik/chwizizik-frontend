@@ -18,14 +18,6 @@ function validatePassword(pw: string) {
 export default function Signup() {
   const navigate = useNavigate();
 
-  // ====== 생년월일 데이터 생성 ======
-  const years = useMemo(() => {
-    const now = new Date().getFullYear();
-    return Array.from({ length: 80 }, (_, i) => String(now - i));
-  }, []);
-  const months = useMemo(() => Array.from({ length: 12 }, (_, i) => String(i + 1)), []);
-  const days = useMemo(() => Array.from({ length: 31 }, (_, i) => String(i + 1)), []);
-
   // ====== Form State ======
   const [userId, setUserId] = useState("");
   const [isIdChecked, setIsIdChecked] = useState(false);
@@ -33,10 +25,6 @@ export default function Signup() {
   const [pw, setPw] = useState("");
   const [pw2, setPw2] = useState("");
   const [name, setName] = useState("");
-  const [birthY, setBirthY] = useState("");
-  const [birthM, setBirthM] = useState("");
-  const [birthD, setBirthD] = useState("");
-  const [gender, setGender] = useState<Gender>("");
   const [phone1, setPhone1] = useState("010");
   const [phone2, setPhone2] = useState("");
   const [phone3, setPhone3] = useState("");
@@ -51,8 +39,6 @@ export default function Signup() {
     validatePassword(pw) === "" &&
     pw === pw2 &&
     name.trim() !== "" &&
-    birthY !== "" && birthM !== "" && birthD !== "" &&
-    gender !== "" &&
     phone2.trim() !== "" && phone3.trim() !== "" &&
     emailId.trim() !== "" && emailDomain.trim() !== "";
 
@@ -81,9 +67,7 @@ export default function Signup() {
       userId,
       password: pw,
       name,
-      birthDate: `${birthY}-${birthM.padStart(2, '0')}-${birthD.padStart(2, '0')}`,
-      gender,
-      phoneNumber: `${phone1}${phone2}${phone3}`,
+      phone: `${phone1}${phone2}${phone3}`,
       email: `${emailId}@${emailDomain}`
     };
 

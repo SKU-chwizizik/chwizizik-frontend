@@ -38,6 +38,30 @@ const Mypage = () => {
     jobField: ''
   });
 
+  React.useEffect(() => {
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get('/api/user/profile'); 
+      if (response.data) {
+        setUserInfo({
+          userId: response.data.userId, // 백엔드에서 받아온 실제 ID
+          name: response.data.name || '',
+          phone: response.data.phoneNumber || '', // DTO 필드명 확인 (phoneNumber)
+          email: response.data.email || '',
+          jobField: response.data.jobField || ''
+        });
+        // 학력 정보도 있으면 함께 세팅
+        if (response.data.education) {
+          setEduInfo(response.data.education);
+        }
+      }
+    } catch (error) {
+      console.error("유저 정보를 불러오는데 실패했습니다.", error);
+    }
+  };
+  fetchUserData();
+}, []);
+
   // 3. 학력 정보 상태
   const [isEduEditing, setIsEduEditing] = useState(false);
   const [eduInfo, setEduInfo] = useState({
@@ -85,26 +109,43 @@ const Mypage = () => {
   };
 
   const handleSave = async() => {
-    try {
-      const response = await axios.patch('/api/user/profile', userInfo);
-      if (response.status === 200) {
-        alert('기본 정보가 DB에 저장되었습니다.');
-        setIsEditing(false);
-      }
+  if (!userInfo.userId) {
+    alert('유저 정보가 확인되지 않습니다. 다시 로그인해주세요.');
+    return;
+  }
+  try {
+    // 백엔드 DTO 필드명과 일치시키기 위해 데이터 재구성
+    const savePayload = {
+      userId: userInfo.userId,
+      name: userInfo.name,
+      phoneNumber: userInfo.phone, // phone -> phoneNumber로 매칭
+      email: userInfo.email,
+      jobField: userInfo.jobField
+    };
+    
+    const response = await axios.patch('/api/user/profile', savePayload);
+    if (response.status === 200) {
+      alert('기본 정보가 DB에 저장되었습니다.');
+      setIsEditing(false);
+    }
     } catch (error) {
       alert('저장 중 오류가 발생했습니다.');
     }
-  };
+    };
 
   const handleEduSave = async() => {
-    try {
-      await axios.patch('/api/user/education', eduInfo);
-      alert('학력 정보가 저장되었습니다.');
-      setIsEduEditing(false);
-    } catch (error) {
-      alert('저장 실패');
-    }
-  };
+  try {
+    const eduPayload = {
+      userId: userInfo.userId, // 필수 포함!
+      ...eduInfo
+    };
+    await axios.patch('/api/user/education', eduPayload);
+    alert('학력 정보가 저장되었습니다.');
+    setIsEduEditing(false);
+  } catch (error) {
+    alert('학력 정보 저장 실패');
+  }
+};
 
   const handleAddCert = async() => {
     if (certInput.trim() === "") return;
