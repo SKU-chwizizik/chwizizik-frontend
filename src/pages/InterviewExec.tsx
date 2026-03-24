@@ -1,13 +1,56 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import styles from "./InterviewTech.module.css"; 
+import styles from "./InterviewTech.module.css";
 
-export default function InterviewExec() {
+export default function InterviewTech() {
   const [searchParams] = useSearchParams();
   const lang = searchParams.get("lang");
 
-  // public/img 폴더 안에 있으므로 경로에 /img/를 추가합니다.
-  const interviewerImg = "/img/InterviewerExec.png"; 
+  const interviewerImg = "/img/InterviewerExec.png";
+
+  // video 태그를 직접 연결하기 위한 ref
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // 카메라 스트림 저장용
+  const streamRef = useRef<MediaStream | null>(null);
+
+  // 카메라 접근 실패 시 보여줄 메시지
+  const [cameraError, setCameraError] = useState("");
+
+  useEffect(() => {
+    const startCamera = async () => {
+      try {
+        // 사용자 웹캠 권한 요청
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false,
+        });
+
+        streamRef.current = stream;
+
+        // 받아온 스트림을 video 태그에 연결
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (error) {
+        console.error("카메라 접근 실패:", error);
+        setCameraError(
+          lang === "ko"
+            ? "카메라에 접근할 수 없습니다."
+            : "Cannot access camera."
+        );
+      }
+    };
+
+    startCamera();
+
+    // 컴포넌트가 사라질 때 카메라 종료
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [lang]);
 
   return (
     <div className={styles.container}>
@@ -23,24 +66,34 @@ export default function InterviewExec() {
         <div className={styles.interviewStage}>
           {/* 면접관 사진 영역 */}
           <div className={styles.interviewerSpace}>
-            <img 
-              src={interviewerImg} 
-              alt="Executive Interviewer" 
-              className={styles.interviewerImage} 
+            <img
+              src={interviewerImg}
+              alt="Executive Interviewer"
+              className={styles.interviewerImage}
             />
           </div>
 
           {/* 사용자 카메라 영역 */}
           <div className={styles.userCamera}>
-            <p>User Camera</p>
+            {cameraError ? (
+              <p className={styles.cameraText}>{cameraError}</p>
+            ) : (
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className={styles.userVideo}
+              />
+            )}
           </div>
 
           {/* 하단 질문 바 */}
           <footer className={styles.questionBar}>
             <p className={styles.questionText}>
-              {lang === "ko" 
+              {lang === "ko"
                 ? "우리 회사의 핵심 가치 중 본인과 가장 잘 맞는 것은 무엇인가요?"
-                : "Which of our company's core values resonates with you the most?"}
+                  : "Which of our company's core values resonates with you the most?"}
             </p>
           </footer>
         </div>
