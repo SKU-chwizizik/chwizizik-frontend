@@ -150,19 +150,31 @@ const Mypage = () => {
   // PDF 파일 업로드
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (selectedFile && selectedFile.type === 'application/pdf') {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      formData.append('userId', userInfo.userId);
-      try {
-        const res = await axios.post('/api/user/files', formData);
-        setFiles(prev => [...prev, res.data]); // res.data는 {id, fileName} 형태 기대
-        alert('파일이 업로드되었습니다.');
-      } catch (error) {
-        alert('파일 업로드 실패');
-      }
-    } else {
+    if (!selectedFile) return;
+    if (selectedFile.type !== 'application/pdf') {
       alert('PDF 파일만 가능합니다.');
+      return;
+    }
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    try {
+      const res = await axios.post('/api/user/files', formData, { withCredentials: true });
+      setFiles(prev => [...prev, res.data]);
+      alert('파일이 업로드되었습니다.');
+    } catch (error) {
+      alert('파일 업로드 실패');
+    }
+    e.target.value = '';
+  };
+
+  // 이력서 파일 삭제
+  const handleDeleteFile = async (resumeId: number) => {
+    if (!window.confirm('삭제할까요?')) return;
+    try {
+      await axios.delete(`/api/user/resumes/${resumeId}`, { withCredentials: true });
+      setFiles(prev => prev.filter(f => f.id !== resumeId));
+    } catch (error) {
+      alert('파일 삭제 실패');
     }
   };
 
@@ -259,7 +271,7 @@ const Mypage = () => {
               {/* PDF 파일 섹션 */}
               <section className={styles.card}>
                 <div className={styles.cardHeader}><h3>자기소개서 및 포트폴리오</h3><input type="file" id="file-up" accept=".pdf" hidden onChange={handleFileChange} /><label htmlFor="file-up" className={styles.editBtn}>추가</label></div>
-                <div className={styles.fileList}>{files.map(f => <div key={f.id} className={styles.fileItem}><span className={styles.fileName}>📄 {f.fileName}</span><span className={styles.fileDeleteIcon} onClick={() => {if(window.confirm("삭제할까요?")) setFiles(files.filter(file=>file.id !== f.id))}}>✕</span></div>)}</div>
+                <div className={styles.fileList}>{files.map(f => <div key={f.id} className={styles.fileItem}><span className={styles.fileName}>📄 {f.fileName}</span><span className={styles.fileDeleteIcon} onClick={() => handleDeleteFile(f.id)}>✕</span></div>)}</div>
               </section>
             </>
           )}

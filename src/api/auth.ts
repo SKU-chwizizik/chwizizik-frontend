@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-
 export const getKakaoUserInfo = async (code: string) => {
-    const res = await axios.get(`/kakao/auth-code?code=${code}`);
+    const res = await axios.get(`/api/kakao/auth-code?code=${code}`, {
+        withCredentials: true
+    });
     return res.data;
 };
 

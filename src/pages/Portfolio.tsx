@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import axios from "axios";
 import styles from "./Portfolio.module.css";
 
 /** 최종학력 타입 */
@@ -57,6 +58,7 @@ export default function Portfolio() {
   /** 검증/제출 관련 state */
   const [errors, setErrors] = useState<Errors>({});
   const [submittedOnce, setSubmittedOnce] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   /** 앞뒤 공백 제거한 값 */
   const schoolV = school.trim();
@@ -120,7 +122,7 @@ export default function Portfolio() {
    * - 필수값 누락 시 제출 막음
    * - 모두 입력되면 서버 전송 위치로 이어짐
    */
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmittedOnce(true);
 
@@ -133,28 +135,24 @@ export default function Portfolio() {
       return;
     }
 
-    /**
-     * TODO: 서버 전송 시 FormData 예시
-     *
-     * const fd = new FormData();
-     * fd.append("education", education);
-     * fd.append("school", schoolV);
-     * fd.append("major", majorV);
-     * fd.append("field", fieldV);
-     * fd.append("cert", certV);
-     * if (documentFile) fd.append("document", documentFile);
-     */
+    const fd = new FormData();
+    fd.append("education", education);
+    fd.append("school", schoolV);
+    fd.append("major", majorV);
+    fd.append("field", fieldV);
+    fd.append("cert", certV);
+    fd.append("document", documentFile!);
 
-    console.log({
-      education,
-      school: schoolV,
-      major: majorV,
-      field: fieldV,
-      cert: certV,
-      documentFile: documentFile?.name,
-    });
-
-    alert("포트폴리오 등록이 완료되었습니다!");
+    setIsSubmitting(true);
+    try {
+      await axios.post("/api/portfolio", fd, { withCredentials: true });
+      alert("포트폴리오 등록이 완료되었습니다!");
+    } catch (err) {
+      console.error(err);
+      alert("포트폴리오 저장 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   /**
@@ -379,11 +377,12 @@ export default function Portfolio() {
           {/* 제출 버튼 */}
           <button
             className={`${styles.submit} ${
-              !isValid ? styles.submitDisabled : ""
+              !isValid || isSubmitting ? styles.submitDisabled : ""
             }`}
             type="submit"
+            disabled={isSubmitting}
           >
-            등록 완료
+            {isSubmitting ? "처리 중..." : "등록 완료"}
           </button>
 
           {/* 하단 안내 문구 */}
