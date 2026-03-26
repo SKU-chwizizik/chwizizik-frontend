@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import styles from "./Aiselect.module.css";
 import { useNavigate } from "react-router-dom";
 
-type InterviewerType = "basic" | "job";
+type InterviewerType = "exec" | "tech";
 type Language = "ko" | "en";
 
 interface InterviewerOption {
@@ -25,17 +25,17 @@ export default function InterviewerSelect() {
   const onStart = () => {
     if (!selected) return;
 
-    if (selected === "basic") {
-      navigate("/interview/executive?lang=" + lang); 
-      } else if (selected === "job") {
-        navigate("/interview/technical?lang=" + lang);
+    if (selected === "exec") {
+      navigate(`/test?lang=${lang}&type=exec`);
+      } else if (selected === "tech") {
+        navigate(`/test?lang=${lang}&type=tech`);
 }
   };
 
   const options: InterviewerOption[] = useMemo(
     () => [
       {
-        id: "basic",
+        id: "exec",
         titleKo: "임원 (20년차)",
         titleEn: "Executive (20 yrs)",
         badgeKo: "임원 면접",
@@ -51,7 +51,7 @@ export default function InterviewerSelect() {
         imgSrc: "/img/woman.png", 
       },
       {
-        id: "job",
+        id: "tech",
         titleKo: "개발자 (8년차)",
         titleEn: "Engineer (8 yrs)",
         badgeKo: "기술 면접",

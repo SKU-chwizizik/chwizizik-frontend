@@ -29,126 +29,7 @@
 
 .main {
   width: 95%;
-  max-width: 1200px; /* 원래의 넉넉한 크기로 복구 */
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  min-height: 0;
-}
-
-.interviewStage {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9; 
-  max-height: calc(100vh - 220px); 
-  background-color: #e9ecef; /* 원래의 큼직한 회색 배경 */
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-  display: flex;
-  justify-content: center; /* 사진 가로 중앙 */
-  align-items: center;     /* 사진 세로 중앙 */
-  overflow: hidden;
-  margin: 0 auto;
-}
-
-.interviewerSpace {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.interviewerImage {
-  width: auto;      /* 너비는 자동으로 비율 유지 */
-  height: 90%;    
-  object-fit: contain; 
-  display: block;
-}
-
-.questionBar {
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 85%;
-  background-color: rgba(255, 255, 255, 0.98);
-  padding: 20px 30px;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  z-index: 11;
-}
-
-.questionText {
-  font-size: 22px;
-  font-weight: 700;
-  color: #1a1a1b;
-  margin: 0;
-  line-height: 1.4;
-  word-break: keep-all;
-}
-
-.userCamera {
-  position: absolute;
-  top: 26px;
-  right: 26px;
-  width: 270px;
-  height: 170px;
-  border-radius: 16px;
-  overflow: hidden;
-  background: #39414a;
-  border: 3px solid #ffffff;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.userVideo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.cameraText {
-  color: #ffffff;
-  font-size: 14px;
-  text-align: center;
-  padding: 12px;
-}.container {
-  width: 100%;
-  height: 100vh;
-  background-color: #f8f9fa;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 80px;
-  padding-bottom: 20px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.header {
-  width: 100%;
   max-width: 1200px;
-  height: 80px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.title {
-  font-size: 24px;
-  font-weight: 800;
-  color: #212529;
-  margin: 0;
-}
-
-.main {
-  width: 95%;
-  max-width: 1200px; /* 원래의 넉넉한 크기로 복구 */
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -159,14 +40,14 @@
 .interviewStage {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9; 
-  max-height: calc(100vh - 220px); 
-  background-color: #e9ecef; /* 원래의 큼직한 회색 배경 */
+  aspect-ratio: 16 / 9;
+  max-height: calc(100vh - 220px);
+  background-color: #e9ecef;
   border-radius: 20px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
   display: flex;
-  justify-content: center; /* 사진 가로 중앙 */
-  align-items: center;     /* 사진 세로 중앙 */
+  justify-content: center;
+  align-items: center;
   overflow: hidden;
   margin: 0 auto;
 }
@@ -180,33 +61,10 @@
 }
 
 .interviewerImage {
-  width: auto;      /* 너비는 자동으로 비율 유지 */
-  height: 90%;    
-  object-fit: contain; 
+  width: auto;
+  height: 90%;
+  object-fit: contain;
   display: block;
-}
-
-.questionBar {
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 85%;
-  background-color: rgba(255, 255, 255, 0.98);
-  padding: 20px 30px;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  z-index: 11;
-}
-
-.questionText {
-  font-size: 22px;
-  font-weight: 700;
-  color: #1a1a1b;
-  margin: 0;
-  line-height: 1.4;
-  word-break: keep-all;
 }
 
 .userCamera {
@@ -223,12 +81,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 15;
 }
 
 .userVideo {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: scaleX(-1);
 }
 
 .cameraText {
@@ -236,4 +96,138 @@
   font-size: 14px;
   text-align: center;
   padding: 12px;
+}
+
+/* 질문 보기 토글 - 기존 위치 유지 */
+.questionToggleWrap {
+  position: absolute;
+  left: 115px;
+  bottom: 118px;
+  z-index: 20;
+}
+
+.switchBox {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #d7dbe2;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  user-select: none;
+}
+
+.switchLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1;
+}
+
+/* 토글 스위치 */
+.switch {
+  position: relative;
+  width: 50px;
+  height: 30px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.switchOn {
+  background: linear-gradient(90deg, #4f46e5 0%, #6366f1 100%);
+  box-shadow: inset 0 0 0 1px rgba(79, 70, 229, 0.12);
+}
+
+.switchOff {
+  background: #d1d5db;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.switchThumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.18),
+    0 1px 2px rgba(0, 0, 0, 0.12);
+  transition: transform 0.22s ease;
+}
+
+.switchOn .switchThumb {
+  transform: translateX(20px);
+}
+
+.switchOff .switchThumb {
+  transform: translateX(0);
+}
+
+/* 스피커 버튼 - 상시 표시 */
+.speakerButtonWrap {
+  position: absolute;
+  right: 120px;
+  bottom: 118px;
+  z-index: 20;
+}
+
+.speakerButton {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #d7dbe2;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  font-size: 20px;
+  display: grid;
+  place-items: center;
+  transition:
+    transform 0.18s ease,
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.speakerButton:hover {
+  transform: scale(1.06);
+  background: #f4f6f8;
+}
+
+.speakerButtonActive {
+  background: #dbeafe;
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.08),
+    0 0 0 4px rgba(59, 130, 246, 0.16);
+}
+
+/* 질문 바 */
+.questionBar {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  background-color: rgba(255, 255, 255, 0.98);
+  padding: 20px 30px;
+  border-radius: 18px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  z-index: 11;
+}
+
+.questionText {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a1b;
+  margin: 0;
+  line-height: 1.4;
+  word-break: keep-all;
 }

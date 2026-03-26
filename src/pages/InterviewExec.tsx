@@ -1,26 +1,29 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import styles from "./InterviewTech.module.css";
+import styles from "./InterviewExec.module.css";
 
-export default function InterviewTech() {
+export default function InterviewExec() {
   const [searchParams] = useSearchParams();
-  const lang = searchParams.get("lang");
+  const lang = searchParams.get("lang") ?? "ko";
 
   const interviewerImg = "/img/InterviewerExec.png";
 
-  // video 태그를 직접 연결하기 위한 ref
   const videoRef = useRef<HTMLVideoElement | null>(null);
-
-  // 카메라 스트림 저장용
   const streamRef = useRef<MediaStream | null>(null);
 
-  // 카메라 접근 실패 시 보여줄 메시지
   const [cameraError, setCameraError] = useState("");
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [showQuestion, setShowQuestion] = useState(false);
+
+  const questionText = useMemo(() => {
+    return lang === "ko"
+      ? "우리 회사의 핵심 가치 중 본인과 가장 잘 맞는 것은 무엇인가요?"
+      : "Which of our company's core values resonates with you the most?";
+  }, [lang]);
 
   useEffect(() => {
     const startCamera = async () => {
       try {
-        // 사용자 웹캠 권한 요청
         const stream = await navigator.mediaDevices.getUserMedia({
           video: true,
           audio: false,
@@ -28,7 +31,6 @@ export default function InterviewTech() {
 
         streamRef.current = stream;
 
-        // 받아온 스트림을 video 태그에 연결
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
@@ -44,27 +46,53 @@ export default function InterviewTech() {
 
     startCamera();
 
-    // 컴포넌트가 사라질 때 카메라 종료
     return () => {
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
       }
+      window.speechSynthesis.cancel();
     };
   }, [lang]);
+
+  const speakQuestion = () => {
+    if (!("speechSynthesis" in window)) return;
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(questionText);
+    utterance.lang = lang === "ko" ? "ko-KR" : "en-US";
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      speakQuestion();
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+      window.speechSynthesis.cancel();
+    };
+  }, [questionText]);
 
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <div className={styles.category}>
-          <h2 className={styles.title}>
-            {lang === "ko" ? "임원 면접" : "Executive Interview"}
-          </h2>
-        </div>
+        <h2 className={styles.title}>
+          {lang === "ko" ? "임원 면접" : "Executive Interview"}
+        </h2>
       </header>
 
       <main className={styles.main}>
-        <div className={styles.interviewStage}>
-          {/* 면접관 사진 영역 */}
+        <section className={styles.interviewStage}>
           <div className={styles.interviewerSpace}>
             <img
               src={interviewerImg}
@@ -73,7 +101,6 @@ export default function InterviewTech() {
             />
           </div>
 
-          {/* 사용자 카메라 영역 */}
           <div className={styles.userCamera}>
             {cameraError ? (
               <p className={styles.cameraText}>{cameraError}</p>
@@ -88,15 +115,46 @@ export default function InterviewTech() {
             )}
           </div>
 
-          {/* 하단 질문 바 */}
-          <footer className={styles.questionBar}>
-            <p className={styles.questionText}>
-              {lang === "ko"
-                ? "우리 회사의 핵심 가치 중 본인과 가장 잘 맞는 것은 무엇인가요?"
-                  : "Which of our company's core values resonates with you the most?"}
-            </p>
-          </footer>
-        </div>
+          <div className={styles.questionToggleWrap}>
+            <div className={styles.switchBox}>
+              <span className={styles.switchLabel}>
+                {lang === "ko" ? "질문 보기" : "Show Question"}
+              </span>
+
+              <button
+                type="button"
+                role="switch"
+                aria-checked={showQuestion}
+                className={`${styles.switch} ${
+                  showQuestion ? styles.switchOn : styles.switchOff
+                }`}
+                onClick={() => setShowQuestion((prev) => !prev)}
+              >
+                <span className={styles.switchThumb} />
+              </button>
+            </div>
+          </div>
+
+          <div className={styles.speakerButtonWrap}>
+            <button
+              type="button"
+              className={`${styles.speakerButton} ${
+                isSpeaking ? styles.speakerButtonActive : ""
+              }`}
+              onClick={speakQuestion}
+              aria-label={lang === "ko" ? "질문 다시 듣기" : "Replay question"}
+              title={lang === "ko" ? "질문 다시 듣기" : "Replay question"}
+            >
+              🔊
+            </button>
+          </div>
+
+          {showQuestion && (
+            <footer className={styles.questionBar}>
+              <p className={styles.questionText}>{questionText}</p>
+            </footer>
+          )}
+        </section>
       </main>
     </div>
   );
