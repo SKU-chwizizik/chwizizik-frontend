@@ -11,7 +11,7 @@
   padding: clamp(18px, 4vh, 40px) 0 80px;
 }
 
-/* 타이틀: 맨 위 가운데 */
+/* 페이지 타이틀 */
 .title {
   margin: 0 0 22px;
   text-align: center;
@@ -20,7 +20,7 @@
   letter-spacing: -0.5px;
 }
 
-/* 카드 */
+/* 전체 카드 */
 .card {
   width: min(720px, 92vw);
   margin: 0 auto;
@@ -30,7 +30,7 @@
   padding: clamp(20px, 3vw, 34px);
 }
 
-/* 라벨(좌) + 입력(우) */
+/* 라벨(왼쪽) + 입력영역(오른쪽) */
 .row {
   display: grid;
   grid-template-columns: 140px 1fr;
@@ -39,18 +39,29 @@
   margin: 14px 0;
 }
 
+/* 항목 라벨 */
 .label {
   font-size: 14px;
   font-weight: 700;
   color: #111;
 }
 
+/* 우측 입력 영역 */
 .cell {
   display: flex;
   align-items: center;
+  min-width: 0;
 }
 
-/* 공통 input/select */
+/* input/select + 에러문구 세로 정렬용 */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+/* 공통 입력창 */
 .input {
   height: 46px;
   padding: 0 14px;
@@ -61,58 +72,85 @@
   width: 100%;
   min-width: 0;
 }
+
 .input:focus {
   border-color: #8aa2ff;
 }
 
+/* select 박스 */
 .select {
   height: 46px;
   padding: 0 12px;
   border: 1px solid #cfcfcf;
   border-radius: 6px;
   background: #fff;
-  width: 100%;
+  font-size: 14px;
   min-width: 0;
 }
 
-/* Signup에서 쓰던 field 개념 그대로 */
+.select:focus {
+  border-color: #8aa2ff;
+  outline: none;
+}
+
+/* 입력창 너비 */
 .field {
   width: min(360px, 52vw);
 }
 
-/* 파일 입력 그룹 */
+/* 파일 업로드 묶음 */
 .fileGroup {
-  width: min(520px, 70vw);
-  display: grid;
-  grid-template-columns: 110px 1fr;
+  width: min(360px, 52vw);
+  min-height: 46px;
+  display: flex;
   align-items: center;
   gap: 12px;
-  min-width: 0;
+  flex-wrap: wrap;
 }
 
+/* 파일 선택 버튼 */
 .fileBtn {
   height: 46px;
+  padding: 0 18px;
   border-radius: 6px;
   border: 1px solid #cfcfcf;
   background: #fff;
   cursor: pointer;
-  font-weight: 800;
-  display: grid;
-  place-items: center;
-  user-select: none;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
 }
 
+/* 실제 input file은 숨김 */
 .fileInput {
   display: none;
 }
 
+/* 선택된 파일명 */
 .fileName {
-  font-size: 13px;
+  font-size: 14px;
   color: #666;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  word-break: break-all;
+}
+
+/* input/select 에러 상태 */
+.invalid {
+  border-color: #ef4444 !important;
+}
+
+/* 파일 업로드 버튼 에러 상태 */
+.invalidBox .fileBtn {
+  border-color: #ef4444;
+}
+
+/* 에러 문구 */
+.errorText {
+  margin: 0;
+  font-size: 12px;
+  color: #ef4444;
+  line-height: 1.4;
 }
 
 /* 제출 버튼 */
@@ -130,54 +168,35 @@
   place-items: center;
 }
 
-/* 모바일에서 라벨 위로 */
+/* 비활성화 느낌만 주는 클래스
+   실제 클릭 자체를 막고 싶으면 disabled 속성도 함께 사용 가능 */
+.submitDisabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 하단 안내 문구 */
+.hint {
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+}
+
+/* 모바일 대응 */
 @media (max-width: 720px) {
   .row {
     grid-template-columns: 1fr;
     row-gap: 8px;
   }
+
+  .label {
+    font-size: 13px;
+  }
+
   .field,
   .fileGroup,
   .submit {
     width: 100%;
   }
-  .fileGroup {
-    grid-template-columns: 110px 1fr;
-    width: 100%;
-  }
-}
-
-/* 아래 5개만 추가 */
-
-.stack {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.errorText {
-  margin: 0;
-  font-size: 12px;
-  color: #e53935;
-}
-
-.invalid {
-  border-color: #e53935 !important;
-}
-
-.invalidBox {
-  outline: 1px solid #e53935;
-  border-radius: 6px;
-}
-
-.submitDisabled {
-  opacity: 0.6;
-}
-
-.hint {
-  margin: 12px 0 0;
-  font-size: 12px;
-  color: #777;
-  text-align: center;
 }

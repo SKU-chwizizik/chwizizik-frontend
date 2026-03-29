@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"; // 1. 상태 관리 기능 추가
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import styles from "./Header.module.css";
 import axios from "axios";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function Header() {
   const navigate = useNavigate();
@@ -15,14 +16,12 @@ export default function Header() {
   useEffect(() => {
   const checkLogin = async () => {
     try {
-      // 백엔드에 만든 로그인 확인용 API 호출
       // withCredentials: true가 있어야 브라우저가 쿠키를 들고 서버로 이동함
-      const response = await axios.get("http://localhost:8080/api/user/me", {
+      const response = await axios.get(`/api/user/me`, {
         withCredentials: true,
       });
 
       if (response.status === 200) {
-        // 백엔드에서 유저 정보(닉네임 등)를 보내준다고 가정
         setNickname(response.data.nickname); 
       }
     } catch (error) {
@@ -68,10 +67,8 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        {/* 왼쪽: 로고 */}
         <div className={styles.logo} onClick={() => navigate("/")}>
-          <img src="/img/logo.png" alt="logo" />
-          <span>취지직</span>
+          <span>CZZ</span>
         </div>
 
         {/* 오른쪽: 메뉴 + 로그인 / 로그아웃 */}

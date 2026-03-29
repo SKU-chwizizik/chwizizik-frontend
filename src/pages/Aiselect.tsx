@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import styles from "./Aiselect.module.css";
+import { useNavigate } from "react-router-dom";
 
-type InterviewerType = "basic" | "job";
+type InterviewerType = "exec" | "tech";
 type Language = "ko" | "en";
 
 interface InterviewerOption {
@@ -18,41 +19,52 @@ interface InterviewerOption {
 export default function InterviewerSelect() {
   const [selected, setSelected] = useState<InterviewerType | null>(null);
   const [lang, setLang] = useState<Language>("ko");
+  const navigate = useNavigate();
+
+  // 중복되었던 onStart를 하나로 합쳤습니다.
+  const onStart = () => {
+    if (!selected) return;
+
+    if (selected === "exec") {
+      navigate(`/test?lang=${lang}&type=exec`);
+      } else if (selected === "tech") {
+        navigate(`/test?lang=${lang}&type=tech`);
+}
+  };
 
   const options: InterviewerOption[] = useMemo(
     () => [
       {
-        id: "basic",
-        titleKo: "부장 임원 23년차",
-        titleEn: "Senior Executive (23 yrs)",
-        badgeKo: "기본 면접",
-        badgeEn: "General Interview",
+        id: "exec",
+        titleKo: "임원 (20년차)",
+        titleEn: "Executive (20 yrs)",
+        badgeKo: "임원 면접",
+        badgeEn: "Executive Interview",
         bulletsKo: [
-          "조직 목표와 전략에 맞는 인재 선발",
-          "조직 적합성, 장기적 성장 가능성, 리더십 잠재력 평가",
+          "조직 목표와 전략에 부합하는 인재 선발",
+          "조직 적합성, 커뮤니케이션 능력, 장기 성장 가능성 평가",
         ],
         bulletsEn: [
-          "Selects talent aligned with organization goals and strategy",
-          "Evaluates culture fit, long-term growth potential, leadership",
+          "Evaluates alignment with company goals and strategy",
+          "Focuses on cultural fit, communication, and growth potential",
         ],
-        // 프로젝트 이미지 경로로 바꿔줘 (public 폴더 기준)
-        imgSrc: "/img/man.png",
+        imgSrc: "/img/woman.png", 
       },
       {
-        id: "job",
-        titleKo: "개발팀 팀장 17년차",
-        titleEn: "Dev Team Lead (17 yrs)",
-        badgeKo: "직무 면접",
-        badgeEn: "Role Interview",
+        id: "tech",
+        titleKo: "개발자 (8년차)",
+        titleEn: "Engineer (8 yrs)",
+        badgeKo: "기술 면접",
+        badgeEn: "Technical Interview",
         bulletsKo: [
-          "직무 관련 전문성, 실무 수행 능력 평가",
-          "팀 내 협업, 문제 해결 능력, 프로젝트 경험 중심",
+          "직무 관련 기술 역량과 실무 이해도 평가",
+          "코드 설계 능력, 문제 해결 과정, 프로젝트 경험 중심",
         ],
         bulletsEn: [
-          "Assesses role expertise and practical execution",
-          "Focus on collaboration, problem-solving, project experience",
+          "Evaluates technical skills and practical understanding",
+          "Focuses on code design, problem solving, and project experience",
         ],
-        imgSrc: "/img/woman.png",
+        imgSrc: "/img/man.png", 
       },
     ],
     []
@@ -60,17 +72,8 @@ export default function InterviewerSelect() {
 
   const t = (ko: string, en: string) => (lang === "ko" ? ko : en);
 
-  const onStart = () => {
-    if (!selected) return;
-
-    // TODO: 여기서 라우팅/상태 저장하면 됨
-    // 예: navigate(`/interview?type=${selected}&lang=${lang}`);
-    alert(`Start interview: type=${selected}, lang=${lang}`);
-  };
-
   return (
     <div className={styles.page}>
-      {/* 상단 네비(프로젝트 헤더 컴포넌트 있으면 교체) */}
       <header className={styles.header}>
         <div className={styles.brand}>
           <div className={styles.logoBox} aria-hidden="true">
@@ -121,7 +124,6 @@ export default function InterviewerSelect() {
                     alt={lang === "ko" ? opt.titleKo : opt.titleEn}
                     className={styles.photo}
                     onError={(e) => {
-                      // 이미지 없을 때 깨짐 방지용(임시)
                       (e.currentTarget as HTMLImageElement).style.display = "none";
                     }}
                   />
@@ -170,7 +172,7 @@ export default function InterviewerSelect() {
           <button
             className={styles.submit}
             type="button"
-            disabled={!selected}        //선택 전 비활성화
+            disabled={!selected}
             onClick={onStart}
           >
             {t("면접 시작", "Start Interview")}

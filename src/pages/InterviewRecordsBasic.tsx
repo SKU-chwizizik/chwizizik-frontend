@@ -1,15 +1,14 @@
 import React from 'react';
-import styles from './InterviewRecords.module.css';
+import styles from './InterviewRecordsBasic.module.css';
 
-const InterviewRecords = () => {
+const InterviewRecordsBasic = () => {
   
-  const displayTitle = "직무 면접 기록 보관";
+  const displayTitle = "일반 면접 기록 보관";
 
-  // 직무 면접 관련 하드코딩 데이터
+  // 하드코딩 리스트
   const records = [
-    "2025_10_26_직무면접", 
-    "2025_10_27_직무면접",
-    "2025_11_03_직무면접",
+    "2025_10_26_일반면접", 
+    "2025_10_29_일반면접", 
   ];
 
   const handleBoxClick = (recordName: string) => {
@@ -38,4 +37,4 @@ const InterviewRecords = () => {
   );
 };
 
-export default InterviewRecords;
+export default InterviewRecordsBasic;
