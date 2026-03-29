@@ -11,10 +11,11 @@ export default function Loading() {
   const type = searchParams.get("type");
 
   useEffect(() => {
+
     console.log("Loading 페이지에 전달된 type:", type);
 
     const timer = setTimeout(() => {
-      // 1. 임원 면접인 경우 
+      // 1. 임원 면접인 경우
       if (type?.toLowerCase().includes("exec")) {
         navigate(`/interview/executive?lang=${lang}`);
       } 

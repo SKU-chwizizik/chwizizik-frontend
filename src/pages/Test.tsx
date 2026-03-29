@@ -320,7 +320,7 @@ export default function Test() {
                 type="button"
                 className={`${styles.btn} ${styles.primary}`}
                 onClick={handleNext}
-                disabled={!cameraReady || !micReady}
+                /* disabled={!cameraReady || !micReady} */
               >
                 {lang === "ko" ? "다음으로" : "Next"}
               </button>

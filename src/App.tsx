@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -9,6 +9,7 @@ import Portfolio from "./pages/Portfolio";
 import Mypage from "./pages/Mypage";
 import AiSelect from "./pages/Aiselect";
 import Test from "./pages/Test";
+import Loading from "./pages/Loading"; 
 import InterviewExec from "./pages/InterviewExec";
 import InterviewTech from "./pages/InterviewTech";
 
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/mypage" element={<Mypage />} />
         <Route path="/ai-select" element={<AiSelect />} />
         <Route path="/test" element={<Test />} />
+        <Route path="/loading" element={<Loading />} /> 
         <Route path="/interview/executive" element={<InterviewExec />} />
         <Route path="/interview/technical" element={<InterviewTech />} />
       </Routes>
