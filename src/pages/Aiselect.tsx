@@ -161,7 +161,7 @@ export default function InterviewerSelect() {
             disabled={!selected}
             onClick={onStart}
           >
-            {t("면접 시작", "Start Interview")}
+            {t("다음으로", "Next")}
           </button>
         </section>
       </main>

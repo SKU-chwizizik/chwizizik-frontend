@@ -322,7 +322,7 @@ export default function Test() {
                 onClick={handleNext}
                 disabled={!cameraReady || !micReady}
               >
-                {lang === "ko" ? "다음으로" : "Next"}
+                {lang === "ko" ? "면접 시작" : "Start Interview"}
               </button>
             </div>
 
