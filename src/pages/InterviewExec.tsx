@@ -1,109 +1,158 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import axios from "axios";
 import styles from "./InterviewExec.module.css";
 
 export default function InterviewExec() {
   const [searchParams] = useSearchParams();
-  const lang = searchParams.get("lang") ?? "ko";
+  const navigate = useNavigate();
 
-  // --- 이미지 경로 설정 (기본 / 오픈) ---
+  const lang        = searchParams.get("lang")        ?? "ko";
+  const interviewId = searchParams.get("interviewId") ?? "";
+  const greeting    = searchParams.get("greeting")
+    ? decodeURIComponent(searchParams.get("greeting")!)
+    : (lang === "ko" ? "안녕하세요, 면접을 시작하겠습니다." : "Hello, let's begin the interview.");
+  const poolIds: number[] = (() => {
+    try {
+      const raw = searchParams.get("poolIds");
+      return raw ? JSON.parse(decodeURIComponent(raw)) : [];
+    } catch {
+      return [];
+    }
+  })();
+
   const baseImg = "/img/InterviewerExec.png";
   const openImg = "/img/InterviewerExec_open.png";
 
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoRef  = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const [cameraError, setCameraError] = useState("");
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [showQuestion, setShowQuestion] = useState(false);
-  
-  // 입을 벌리고 있는지 여부 (애니메이션용)
-  const [mouthOpen, setMouthOpen] = useState(false);
+  const [cameraError, setCameraError]             = useState("");
+  const [isSpeaking, setIsSpeaking]               = useState(false);
+  const [showQuestion, setShowQuestion]           = useState(false);
+  const [mouthOpen, setMouthOpen]                 = useState(false);
 
-  const questionText = useMemo(() => {
-    return lang === "ko"
-      ? "우리 회사의 핵심 가치 중 본인과 가장 잘 맞는 것은 무엇인가요?"
-      : "Which of our company's core values resonates with you the most?";
-  }, [lang]);
+  // 면접 state machine
+  const [phase, setPhase]                         = useState<"greeting" | "question" | "finished">("greeting");
+  const [mainQuestionOrder, setMainQuestionOrder] = useState(0);
+  const [isFollowUp, setIsFollowUp]               = useState(false);
+  const [questionText, setQuestionText]           = useState(greeting);
+  const [questionId, setQuestionId]               = useState<number | null>(null);
+  const [answer, setAnswer]                       = useState("");
+  const [isLoading, setIsLoading]                 = useState(false);
 
-  // --- 카메라 로직 ---
-  useEffect(() => {
-    const startCamera = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: false,
-        });
-        streamRef.current = stream;
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      } catch (error) {
-        setCameraError(lang === "ko" ? "카메라에 접근할 수 없습니다." : "Cannot access camera.");
-      }
-    };
-    startCamera();
-
-    return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
-      }
-      window.speechSynthesis.cancel();
-    };
-  }, [lang]);
-
-  // --- 2장 이미지 애니메이션 타이머 ---
+  // 입 애니메이션
   useEffect(() => {
     let intervalId: ReturnType<typeof setInterval>;
-
     if (isSpeaking) {
-      // 말하고 있을 때 200ms마다 입을 벌렸다 다물었다 반복
-      intervalId = setInterval(() => {
-        setMouthOpen((prev) => !prev);
-      }, 150);
+      intervalId = setInterval(() => setMouthOpen((prev) => !prev), 150);
     } else {
-      // 말이 끝나면 무조건 입을 다문 상태로 고정
       setMouthOpen(false);
     }
     return () => clearInterval(intervalId);
   }, [isSpeaking]);
 
-  // --- 음성 합성(TTS) 로직 ---
-  const speakQuestion = () => {
+  // 카메라
+  useEffect(() => {
+    const startCamera = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        streamRef.current = stream;
+        if (videoRef.current) videoRef.current.srcObject = stream;
+      } catch {
+        setCameraError(lang === "ko" ? "카메라에 접근할 수 없습니다." : "Cannot access camera.");
+      }
+    };
+    startCamera();
+    return () => {
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+      window.speechSynthesis.cancel();
+    };
+  }, [lang]);
+
+  // TTS (onDone: TTS 종료 후 콜백)
+  const speakQuestion = (text: string, onDone?: () => void) => {
     if (!("speechSynthesis" in window)) return;
-
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(questionText);
-    utterance.lang = lang === "ko" ? "ko-KR" : "en-US";
-    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang    = lang === "ko" ? "ko-KR" : "en-US";
     utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
+    utterance.onend   = () => { setIsSpeaking(false); onDone?.(); };
     utterance.onerror = () => setIsSpeaking(false);
-
     window.speechSynthesis.speak(utterance);
   };
 
+  // 다음 질문 요청
+  const fetchNextQuestion = async (
+    order: number,
+    lastQId: number | null,
+    lastAnswer: string,
+  ) => {
+    setIsLoading(true);
+    try {
+      const res = await axios.post(
+        "/api/rag/next-question",
+        {
+          interviewId: Number(interviewId),
+          lastQuestionId: lastQId,
+          lastAnswer,
+          mainQuestionOrder: order,
+          selectedPoolItemIds: poolIds,
+        },
+        { withCredentials: true },
+      );
+
+      const { question, questionId: nextQId, isFollowUp: followUp, isFinished, questionOrder } = res.data;
+
+      if (isFinished) {
+        setPhase("finished");
+        setQuestionText(question);
+        speakQuestion(question);
+      } else {
+        setQuestionText(question);
+        setQuestionId(nextQId ?? null);
+        setIsFollowUp(!!followUp);
+        if (!followUp) setMainQuestionOrder(questionOrder ?? order);
+        setPhase("question");
+        speakQuestion(question);
+      }
+    } catch (err) {
+      console.error("질문 요청 실패:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 마운트 시 greeting TTS → 완료 후 첫 질문 요청
   useEffect(() => {
     const timer = setTimeout(() => {
-      speakQuestion();
+      speakQuestion(greeting, () => fetchNextQuestion(1, null, ""));
     }, 500);
     return () => {
       clearTimeout(timer);
       window.speechSynthesis.cancel();
     };
-  }, [questionText]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 답변 제출
+  const handleSubmit = async () => {
+    if (!answer.trim() || !interviewId || isLoading || isSpeaking) return;
+    const submittedAnswer = answer;
+    setAnswer("");
+    await fetchNextQuestion(mainQuestionOrder + 1, questionId, submittedAnswer);
+  };
 
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h2 className={styles.title}>
-          {lang === "ko" ? "임원 면접" : "Executive Interview"}
-        </h2>
+        <h2 className={styles.title}>{lang === "ko" ? "임원 면접" : "Executive Interview"}</h2>
+        {phase === "question" && !isFollowUp && mainQuestionOrder > 0 && (
+          <span className={styles.progress}>{mainQuestionOrder} / 5</span>
+        )}
       </header>
 
       <main className={styles.main}>
         <section className={styles.interviewStage}>
-          {/* mouthOpen 상태에 따라 이미지 교체 */}
           <div className={styles.interviewerSpace}>
             <img
               src={mouthOpen ? openImg : baseImg}
@@ -116,21 +165,13 @@ export default function InterviewExec() {
             {cameraError ? (
               <p className={styles.cameraText}>{cameraError}</p>
             ) : (
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                className={styles.userVideo}
-              />
+              <video ref={videoRef} autoPlay playsInline muted className={styles.userVideo} />
             )}
           </div>
 
           <div className={styles.questionToggleWrap}>
             <div className={styles.switchBox}>
-              <span className={styles.switchLabel}>
-                {lang === "ko" ? "질문 보기" : "Show Question"}
-              </span>
+              <span className={styles.switchLabel}>{lang === "ko" ? "질문 보기" : "Show Question"}</span>
               <button
                 type="button"
                 className={`${styles.switch} ${showQuestion ? styles.switchOn : styles.switchOff}`}
@@ -145,7 +186,7 @@ export default function InterviewExec() {
             <button
               type="button"
               className={`${styles.speakerButton} ${isSpeaking ? styles.speakerButtonActive : ""}`}
-              onClick={speakQuestion}
+              onClick={() => speakQuestion(questionText)}
             >
               🔊
             </button>
@@ -157,6 +198,46 @@ export default function InterviewExec() {
             </footer>
           )}
         </section>
+
+        {phase === "finished" ? (
+          <section className={styles.finishSection}>
+            <p className={styles.finishText}>
+              {lang === "ko" ? "면접이 종료되었습니다. 수고하셨습니다!" : "Interview finished. Great job!"}
+            </p>
+            <button
+              type="button"
+              className={styles.submitButton}
+              onClick={() => navigate("/")}
+            >
+              {lang === "ko" ? "홈으로" : "Go Home"}
+            </button>
+          </section>
+        ) : (
+          <section className={styles.answerSection}>
+            <textarea
+              className={styles.answerInput}
+              placeholder={
+                isSpeaking || phase === "greeting"
+                  ? (lang === "ko" ? "면접관이 말하는 중입니다..." : "Interviewer is speaking...")
+                  : (lang === "ko" ? "답변을 입력하세요..." : "Type your answer...")
+              }
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              rows={4}
+              disabled={isSpeaking || isLoading || phase === "greeting"}
+            />
+            <button
+              type="button"
+              className={styles.submitButton}
+              onClick={handleSubmit}
+              disabled={!answer.trim() || isSpeaking || isLoading || phase === "greeting"}
+            >
+              {isLoading
+                ? (lang === "ko" ? "답변 처리 중..." : "Processing...")
+                : (lang === "ko" ? "답변 제출" : "Submit Answer")}
+            </button>
+          </section>
+        )}
       </main>
     </div>
   );

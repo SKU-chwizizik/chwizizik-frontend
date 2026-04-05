@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import axios from "axios";
 import styles from "./test.module.css";
 
 export default function Test() {
@@ -26,6 +27,8 @@ export default function Test() {
   const [micReady, setMicReady] = useState(false);
   const [permissionError, setPermissionError] = useState("");
   const [micLevel, setMicLevel] = useState(0);
+  const [isGeneratingPool, setIsGeneratingPool] = useState(false);
+  const [poolError, setPoolError] = useState("");
 
   // 페이지를 떠날 때 카메라/마이크 해제
   useEffect(() => {
@@ -174,9 +177,26 @@ export default function Test() {
   }
 };
 
-  // 다음 단계로 이동
-  const handleNext = () => {
-    navigate(`/loading?lang=${lang}&type=${type}`);
+  // 다음 단계로 이동 (질문 풀 생성 후 이동)
+  const handleNext = async () => {
+    setIsGeneratingPool(true);
+    setPoolError("");
+    try {
+      const res = await axios.post(
+        "/api/rag/generate-pool",
+        { type, lang },
+        { withCredentials: true }
+      );
+      navigate(`/loading?lang=${lang}&type=${type}&interviewId=${res.data.interviewId}`);
+    } catch {
+      setPoolError(
+        lang === "ko"
+          ? "질문 생성에 실패했습니다. 다시 시도해주세요."
+          : "Failed to generate questions. Please try again."
+      );
+    } finally {
+      setIsGeneratingPool(false);
+    }
   };
 
   const pageTitle =
@@ -300,12 +320,24 @@ export default function Test() {
               <p className={styles.errorText}>{permissionError}</p>
             )}
 
+            {poolError && (
+              <p className={styles.errorText}>{poolError}</p>
+            )}
+
+            {isGeneratingPool && (
+              <p className={styles.hint}>
+                {lang === "ko"
+                  ? "AI 면접관이 질문을 준비하고 있습니다..."
+                  : "AI interviewer is preparing questions..."}
+              </p>
+            )}
+
             <div className={styles.buttonGroup}>
               <button
                 type="button"
                 className={`${styles.btn} ${styles.ghost}`}
                 onClick={startDeviceTest}
-                disabled={isChecking}
+                disabled={isChecking || isGeneratingPool}
               >
                 {isChecking
                   ? lang === "ko"
@@ -320,9 +352,15 @@ export default function Test() {
                 type="button"
                 className={`${styles.btn} ${styles.primary}`}
                 onClick={handleNext}
-                disabled={!cameraReady || !micReady}
+                disabled={!cameraReady || !micReady || isGeneratingPool}
               >
-                {lang === "ko" ? "면접 시작" : "Start Interview"}
+                {isGeneratingPool
+                  ? lang === "ko"
+                    ? "준비 중..."
+                    : "Preparing..."
+                  : lang === "ko"
+                  ? "다음으로"
+                  : "Next"}
               </button>
             </div>
 

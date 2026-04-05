@@ -1,37 +1,40 @@
 import React, { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import axios from "axios";
 import styles from "./Loading.module.css";
 
 export default function Loading() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // URL 파라미터 가져오기
   const lang = searchParams.get("lang") ?? "ko";
-  const type = searchParams.get("type");
+  const type = searchParams.get("type") ?? "technical";
+  const interviewId = searchParams.get("interviewId");
 
   useEffect(() => {
+    const isExecutive = type.toLowerCase().includes("exec");
+    const route = isExecutive ? "/interview/executive" : "/interview/technical";
 
-    console.log("Loading 페이지에 전달된 type:", type);
-
-    const timer = setTimeout(() => {
-      // 1. 임원 면접인 경우
-      if (type?.toLowerCase().includes("exec")) {
-        navigate(`/interview/executive?lang=${lang}`);
-      } 
-      // 2. 기술 면접인 경우 
-      else if (type?.toLowerCase().includes("tech")) {
-        navigate(`/interview/technical?lang=${lang}`);
-      } 
-
-      else {
-        console.warn("타입이 명확하지 않아 기술 면접으로 자동 연결합니다.");
-        navigate(`/interview/technical?lang=${lang}`);
+    const init = async () => {
+      try {
+        const res = await axios.post(
+          "/api/rag/start",
+          { interviewId: Number(interviewId) },
+          { withCredentials: true }
+        );
+        const { greeting, selectedPoolItemIds } = res.data;
+        navigate(
+          `${route}?lang=${lang}&type=${type}&interviewId=${interviewId}&greeting=${encodeURIComponent(greeting)}&poolIds=${encodeURIComponent(JSON.stringify(selectedPoolItemIds))}`
+        );
+      } catch (err) {
+        console.error("면접 시작 실패:", err);
+        navigate(`${route}?lang=${lang}&type=${type}&interviewId=${interviewId}`);
       }
-    }, 3000);
+    };
 
+    const timer = setTimeout(init, 1500);
     return () => clearTimeout(timer);
-  }, [navigate, lang, type]);
+  }, [navigate, lang, type, interviewId]);
 
   return (
     <div className={styles.page}>

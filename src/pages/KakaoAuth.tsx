@@ -34,10 +34,6 @@ const KakaoAuth = () => {
                     localStorage.setItem("nickname", "사용자");
                 }
 
-                if (data.accessToken) {
-                    localStorage.setItem("accessToken", data.accessToken);
-                }
-
                 // 5. 페이지 이동
                 navigate("/welcome", { state: { userInfo: data.user } });
 
