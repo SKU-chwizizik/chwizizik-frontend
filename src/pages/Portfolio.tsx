@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "./Portfolio.module.css";
 
@@ -27,6 +28,7 @@ type Errors = Partial<
 >;
 
 export default function Portfolio() {
+  const navigate = useNavigate();
   /** 학력 옵션 목록 */
   const educationOptions = useMemo<Education[]>(
     () => [
@@ -147,6 +149,7 @@ export default function Portfolio() {
     try {
       await axios.post("/api/portfolio", fd, { withCredentials: true });
       alert("포트폴리오 등록이 완료되었습니다!");
+      navigate("/");
     } catch (err) {
       console.error(err);
       alert("포트폴리오 저장 중 오류가 발생했습니다. 다시 시도해주세요.");

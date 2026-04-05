@@ -18,6 +18,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+}
+
+.progress {
+  position: absolute;
+  right: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6c757d;
 }
 
 .title {

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import styles from "./Aiselect.module.css";
 import { useNavigate } from "react-router-dom";
 
-type InterviewerType = "exec" | "tech";
+type InterviewerType = "executive" | "technical"; 
 type Language = "ko" | "en";
 
 interface InterviewerOption {
@@ -21,21 +21,15 @@ export default function InterviewerSelect() {
   const [lang, setLang] = useState<Language>("ko");
   const navigate = useNavigate();
 
-  // 중복되었던 onStart를 하나로 합쳤습니다.
   const onStart = () => {
     if (!selected) return;
-
-    if (selected === "exec") {
-      navigate(`/test?lang=${lang}&type=exec`);
-      } else if (selected === "tech") {
-        navigate(`/test?lang=${lang}&type=tech`);
-}
+    navigate(`/test?lang=${lang}&type=${selected}`);
   };
 
   const options: InterviewerOption[] = useMemo(
     () => [
       {
-        id: "exec",
+        id: "executive", 
         titleKo: "임원 (20년차)",
         titleEn: "Executive (20 yrs)",
         badgeKo: "임원 면접",
@@ -51,7 +45,7 @@ export default function InterviewerSelect() {
         imgSrc: "/img/woman.png", 
       },
       {
-        id: "tech",
+        id: "technical",
         titleKo: "개발자 (8년차)",
         titleEn: "Engineer (8 yrs)",
         badgeKo: "기술 면접",
@@ -83,20 +77,12 @@ export default function InterviewerSelect() {
         </div>
 
         <nav className={styles.nav}>
-          <a className={styles.navItem} href="#">
-            HOME
-          </a>
-          <a className={`${styles.navItem} ${styles.navActive}`} href="#">
-            AI 면접관
-          </a>
-          <a className={styles.navItem} href="#">
-            마이페이지
-          </a>
+          <a className={styles.navItem} href="#">HOME</a>
+          <a className={`${styles.navItem} ${styles.navActive}`} href="#">AI 면접관</a>
+          <a className={styles.navItem} href="#">마이페이지</a>
         </nav>
 
-        <button className={styles.logout} type="button">
-          로그아웃
-        </button>
+        <button className={styles.logout} type="button">로그아웃</button>
       </header>
 
       <main className={styles.main}>
@@ -175,7 +161,7 @@ export default function InterviewerSelect() {
             disabled={!selected}
             onClick={onStart}
           >
-            {t("면접 시작", "Start Interview")}
+            {t("다음으로", "Next")}
           </button>
         </section>
       </main>
