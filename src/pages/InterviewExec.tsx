@@ -26,6 +26,7 @@ export default function InterviewExec() {
 
   const videoRef  = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const audioRef  = useRef<HTMLAudioElement | null>(null);
 
   const [cameraError, setCameraError]             = useState("");
   const [isSpeaking, setIsSpeaking]               = useState(false);
@@ -66,20 +67,43 @@ export default function InterviewExec() {
     startCamera();
     return () => {
       streamRef.current?.getTracks().forEach((t) => t.stop());
-      window.speechSynthesis.cancel();
+      audioRef.current?.pause();
     };
   }, [lang]);
 
   // TTS (onDone: TTS 종료 후 콜백)
-  const speakQuestion = (text: string, onDone?: () => void) => {
-    if (!("speechSynthesis" in window)) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang    = lang === "ko" ? "ko-KR" : "en-US";
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend   = () => { setIsSpeaking(false); onDone?.(); };
-    utterance.onerror = () => setIsSpeaking(false);
-    window.speechSynthesis.speak(utterance);
+  const speakQuestion = async (text: string, onDone?: () => void) => {
+    audioRef.current?.pause();
+    setIsSpeaking(true);
+    try {
+      const res = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, voice: lang === "ko" ? "ko-KR-SunHiNeural" : "en-US-JennyNeural" }),
+      });
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      audio.onended = () => {
+        setIsSpeaking(false);
+        URL.revokeObjectURL(url);
+        onDone?.();
+      };
+      audio.onerror = () => {
+        setIsSpeaking(false);
+        URL.revokeObjectURL(url);
+        onDone?.();
+      };
+      await audio.play().catch(() => {
+        setIsSpeaking(false);
+        URL.revokeObjectURL(url);
+        onDone?.();
+      });
+    } catch {
+      setIsSpeaking(false);
+      onDone?.();
+    }
   };
 
   // 다음 질문 요청
@@ -130,7 +154,7 @@ export default function InterviewExec() {
     }, 500);
     return () => {
       clearTimeout(timer);
-      window.speechSynthesis.cancel();
+      audioRef.current?.pause();
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
