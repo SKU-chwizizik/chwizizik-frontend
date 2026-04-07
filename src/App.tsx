@@ -12,6 +12,7 @@ import Test from "./pages/Test";
 import Loading from "./pages/Loading"; 
 import InterviewExec from "./pages/InterviewExec";
 import InterviewTech from "./pages/InterviewTech";
+import Result from "./pages/Result";
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="/loading" element={<Loading />} /> 
         <Route path="/interview/executive" element={<InterviewExec />} />
         <Route path="/interview/technical" element={<InterviewTech />} />
+        <Route path="/result" element={<Result />} />
       </Routes>
     </>
   );

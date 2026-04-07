@@ -207,9 +207,9 @@ export default function InterviewTech() {
             <button
               type="button"
               className={styles.submitButton}
-              onClick={() => navigate("/")}
+              onClick={() => navigate(`/result?interviewId=${interviewId}`)}
             >
-              {lang === "ko" ? "홈으로" : "Go Home"}
+              {lang === "ko" ? "결과 보기" : "View Results"}
             </button>
           </section>
         ) : (

@@ -188,12 +188,17 @@ export default function Test() {
         { withCredentials: true }
       );
       navigate(`/loading?lang=${lang}&type=${type}&interviewId=${res.data.interviewId}`);
-    } catch {
-      setPoolError(
-        lang === "ko"
-          ? "질문 생성에 실패했습니다. 다시 시도해주세요."
-          : "Failed to generate questions. Please try again."
-      );
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { status?: number; data?: { error?: string } } };
+      if (axiosErr.response?.status === 400 && axiosErr.response?.data?.error) {
+        setPoolError(axiosErr.response.data.error);
+      } else {
+        setPoolError(
+          lang === "ko"
+            ? "질문 생성에 실패했습니다. 다시 시도해주세요."
+            : "Failed to generate questions. Please try again."
+        );
+      }
     } finally {
       setIsGeneratingPool(false);
     }
