@@ -26,6 +26,7 @@
 
 /* 개별 박스 스타일 */
 .recordBox {
+  position: relative;
   background-color: #f8f9fa;
   border: 1px solid #e9ecef;
   border-radius: 12px;
@@ -37,7 +38,6 @@
   padding: 20px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  overflow: hidden;
 }
 
 /* 박스 호버 시 효과 */
@@ -46,6 +46,105 @@
   background-color: #fff;
   border-color: #3366ff;
   box-shadow: 0 4px 12px rgba(51, 102, 255, 0.15);
+}
+
+/* 삭제 버튼 */
+.deleteBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.recordBox:hover .deleteBtn {
+  opacity: 1;
+}
+
+.deleteBtn:hover {
+  background: #e53e3e;
+}
+
+/* 확인 모달 */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 14px;
+  padding: 2rem 2.5rem;
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.modalTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.modalActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.modalCancel {
+  flex: 1;
+  padding: 0.6rem 0;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.modalCancel:hover {
+  background: #f3f4f6;
+}
+
+.modalConfirm {
+  flex: 1;
+  padding: 0.6rem 0;
+  border: none;
+  border-radius: 8px;
+  background: #e53e3e;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.modalConfirm:hover {
+  background: #c53030;
 }
 
 .recordIcon {

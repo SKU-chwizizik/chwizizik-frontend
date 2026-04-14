@@ -4,17 +4,28 @@ import axios from "axios";
 import styles from "./Result.module.css";
 
 interface QuestionResult {
-  order: number;
+  order: number | null;
   questionId: number;
   questionText: string;
   answerText: string;
   intent: string | null;
   feedback: string | null;
   improvedAnswer: string | null;
+  isFollowUp: boolean;
+  parentOrder: number | null;
+  followupIndex: number | null;
+}
+
+interface SkillData {
+  score: number;
+  evidence: string;
+  weakness: string;
 }
 
 interface ResultData {
   status: "GENERATING" | "READY";
+  interviewType: string | null;
+  interviewAt: string | null;
   summary: string | null;
   softskillAnalysis: string | null;
   questions: QuestionResult[];
@@ -76,6 +87,9 @@ export default function Result() {
   const [data, setData] = useState<ResultData | null>(null);
   const [activeTab, setActiveTab] = useState<"overview" | "detail">("overview");
   const [selectedQ, setSelectedQ] = useState(0);
+  const [expandedSkill, setExpandedSkill] = useState<string | null>(null);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [titleValue, setTitleValue] = useState("");
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -84,6 +98,29 @@ export default function Result() {
       try {
         const res = await axios.get(`/api/rag/result/${interviewId}`, { withCredentials: true });
         setData(res.data);
+        // 저장된 이름이 없으면 기본값 설정 (InterviewRecords와 동일한 포맷)
+        const storageKey = `interview-title-${interviewId}`;
+        if (!localStorage.getItem(storageKey)) {
+          const d = res.data as ResultData;
+          const typeName = d.interviewType === "job" ? "직무 면접" : "임원 면접";
+          const raw = d.interviewAt ?? "";
+          const dateFormatted = raw.length >= 10
+            ? `${raw.substring(0, 4)}.${raw.substring(5, 7)}.${raw.substring(8, 10)}`
+            : "";
+          const baseTitle = `${dateFormatted} ${typeName}`;
+          // 같은 날짜+유형 제목 중복 시 (N) 접미사 부여
+          const existingTitles = Object.keys(localStorage)
+            .filter(k => k.startsWith("interview-title-") && k !== storageKey)
+            .map(k => localStorage.getItem(k) ?? "");
+          const dupeCount = existingTitles.filter(
+            t => t === baseTitle || t.startsWith(`${baseTitle} (`)
+          ).length;
+          const finalTitle = dupeCount === 0 ? baseTitle : `${baseTitle} (${dupeCount})`;
+          localStorage.setItem(storageKey, finalTitle);
+          setTitleValue(finalTitle);
+        } else {
+          setTitleValue(localStorage.getItem(storageKey)!);
+        }
         if (res.data.status === "READY" && pollRef.current) {
           clearInterval(pollRef.current);
           pollRef.current = null;
@@ -97,13 +134,23 @@ export default function Result() {
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
   }, [interviewId]);
 
-  const softskillScores: Record<string, number> = (() => {
+  // 구형(숫자) / 신형(객체) 모두 처리
+  const softskillData: Record<string, number | SkillData> = (() => {
     if (!data?.softskillAnalysis) return {};
     try {
       const parsed = JSON.parse(data.softskillAnalysis);
       return typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
     } catch { return {}; }
   })();
+
+  const getScore = (v: number | SkillData): number =>
+    typeof v === "number" ? v : (v?.score ?? 0);
+
+  const softskillScores: Record<string, number> = Object.fromEntries(
+    Object.entries(softskillData).map(([k, v]) => [k, getScore(v)])
+  );
+
+  const skillSectionTitle = "기술깊이" in softskillScores ? "역량 분석" : "소프트스킬 분석";
 
   if (!data || data.status === "GENERATING") {
     return (
@@ -120,13 +167,56 @@ export default function Result() {
 
   const currentQ = data.questions[selectedQ];
 
+  // "질문 {questionId}" → "Q{order}" 치환 (LLM이 DB ID로 참조하는 것을 사용자 친화적으로 변환)
+  const questionIdToLabel = Object.fromEntries(
+    data.questions.map((q) => [
+      q.questionId,
+      q.isFollowUp ? `Q${q.parentOrder}-${q.followupIndex}` : `Q${q.order}`,
+    ])
+  );
+  const replaceQuestionRefs = (text: string | null): string | null => {
+    if (!text) return text;
+    return text.replace(/질문\s*(\d+)/g, (_, id) => {
+      const label = questionIdToLabel[Number(id)];
+      return label != null ? label : `질문 ${id}`;
+    });
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.inner}>
 
         {/* 타이틀 */}
         <div className={styles.titleSection}>
-          <h1 className={styles.pageTitle}>AI 피드백</h1>
+          {isEditingTitle ? (
+            <input
+              className={styles.pageTitleInput}
+              value={titleValue}
+              autoFocus
+              onChange={(e) => setTitleValue(e.target.value)}
+              onBlur={() => {
+                const trimmed = titleValue.trim();
+                if (trimmed) {
+                  localStorage.setItem(`interview-title-${interviewId}`, trimmed);
+                  setTitleValue(trimmed);
+                }
+                setIsEditingTitle(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+                if (e.key === "Escape") setIsEditingTitle(false);
+              }}
+            />
+          ) : (
+            <h1
+              className={styles.pageTitle}
+              title="클릭하여 이름 수정"
+              onClick={() => setIsEditingTitle(true)}
+            >
+              {titleValue}
+              <span className={styles.titleEditIcon}>✎</span>
+            </h1>
+          )}
           <div className={styles.tabBar}>
             <button
               type="button"
@@ -157,20 +247,44 @@ export default function Result() {
             )}
             {Object.keys(softskillScores).length > 0 && (
               <section className={styles.card}>
-                <h2 className={styles.cardTitle}>소프트스킬 분석</h2>
+                <h2 className={styles.cardTitle}>{skillSectionTitle}</h2>
                 <div className={styles.radarWrapper}>
                   <RadarChart scores={softskillScores} />
                 </div>
                 <ul className={styles.scoreList}>
-                  {Object.entries(softskillScores).map(([label, score]) => (
-                    <li key={label} className={styles.scoreItem}>
-                      <span className={styles.scoreLabel}>{label}</span>
-                      <div className={styles.scoreBar}>
-                        <div className={styles.scoreBarFill} style={{ width: `${score}%` }} />
-                      </div>
-                      <span className={styles.scoreValue}>{score}</span>
-                    </li>
-                  ))}
+                  {Object.entries(softskillData).map(([label, val]) => {
+                    const score = getScore(val);
+                    const detail = typeof val === "object" && val !== null ? val as SkillData : null;
+                    const hasDetail = !!(detail?.evidence || detail?.weakness);
+                    const isExpanded = expandedSkill === label;
+                    return (
+                      <li key={label} className={styles.scoreItem}>
+                        <div
+                          className={`${styles.scoreRow} ${hasDetail ? styles.scoreRowClickable : ""}`}
+                          onClick={() => hasDetail && setExpandedSkill(isExpanded ? null : label)}
+                        >
+                          <span className={styles.scoreLabel}>{label}</span>
+                          <div className={styles.scoreBar}>
+                            <div className={styles.scoreBarFill} style={{ width: `${score}%` }} />
+                          </div>
+                          <span className={styles.scoreValue}>{score}</span>
+                          {hasDetail && (
+                            <span className={styles.scoreToggle}>{isExpanded ? "▲" : "▼"}</span>
+                          )}
+                        </div>
+                        {isExpanded && (
+                          <div className={styles.scoreDetail}>
+                            {detail?.evidence && (
+                              <p className={styles.scoreEvidence}>● {replaceQuestionRefs(detail.evidence)}</p>
+                            )}
+                            {detail?.weakness && (
+                              <p className={styles.scoreWeakness}>△ {replaceQuestionRefs(detail.weakness)}</p>
+                            )}
+                          </div>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </section>
             )}
@@ -197,7 +311,7 @@ export default function Result() {
                   className={`${styles.qTab} ${selectedQ === idx ? styles.qTabActive : ""}`}
                   onClick={() => setSelectedQ(idx)}
                 >
-                  Q{q.order}
+                  {q.isFollowUp ? `Q${q.parentOrder}-${q.followupIndex}` : `Q${q.order}`}
                 </button>
               ))}
             </div>
@@ -222,7 +336,7 @@ export default function Result() {
                 {currentQ.feedback && (
                   <div className={styles.feedbackBlock}>
                     <span className={`${styles.feedbackBadge} ${styles.badgeFeedback}`}>답변 상세 피드백</span>
-                    <p className={styles.feedbackContent}>{currentQ.feedback}</p>
+                    <p className={styles.feedbackContent}>{replaceQuestionRefs(currentQ.feedback)}</p>
                   </div>
                 )}
                 {currentQ.improvedAnswer && (

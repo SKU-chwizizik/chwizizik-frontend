@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import styles from './Mypage.module.css';
-import InterviewRecords from './InterviewRecords'; 
-import InterviewRecordsBasic from './InterviewRecordsBasic'; 
+import InterviewRecords from './InterviewRecords';
+import InterviewRecordsBasic from './InterviewRecordsBasic';
 import axios from 'axios';
 
 // 타입 정의
@@ -16,7 +17,9 @@ interface AttachedFile {
 type MenuType = 'info' | 'records' | 'job-records' | 'general-records';
 
 const Mypage = () => {
-  const [activeMenu, setActiveMenu] = useState<MenuType>('info');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeMenu = (searchParams.get('section') as MenuType) ?? 'info';
+  const setActiveMenu = (menu: MenuType) => setSearchParams({ section: menu }, { replace: false });
 
   // 1. 상태 관리
   const [profileImage, setProfileImage] = useState<string | null>(null);

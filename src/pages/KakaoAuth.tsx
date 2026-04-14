@@ -34,8 +34,12 @@ const KakaoAuth = () => {
                     localStorage.setItem("nickname", "사용자");
                 }
 
-                // 5. 페이지 이동
-                navigate("/welcome", { state: { userInfo: data.user } });
+                // 5. 페이지 이동 — 신규 유저: /welcome, 기존 유저: /
+                if (data.isNewUser) {
+                    navigate("/welcome", { state: { userInfo: data.user } });
+                } else {
+                    navigate("/");
+                }
 
             } catch (error) {
                 console.error("로그인 에러:", error);
