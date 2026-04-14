@@ -5,6 +5,8 @@ import styles from "./Header.module.css";
 import axios from "axios";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
+const INTERVIEW_PATHS = ["/interview/executive", "/interview/technical"];
+
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -63,6 +65,9 @@ export default function Header() {
     alert("로그아웃에 실패했습니다.");
   }
   };
+
+  // 모든 Hook 호출 이후에 조건부 렌더링 (Rules of Hooks 준수)
+  if (INTERVIEW_PATHS.includes(location.pathname)) return null;
 
   return (
     <header className={styles.header}>

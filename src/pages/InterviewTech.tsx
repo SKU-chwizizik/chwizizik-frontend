@@ -41,6 +41,7 @@ export default function InterviewTech() {
   const [questionId, setQuestionId]               = useState<number | null>(null);
   const [answer, setAnswer]                       = useState("");
   const [isLoading, setIsLoading]                 = useState(false);
+  const [showQuitModal, setShowQuitModal]         = useState(false);
 
   // 입 애니메이션
   useEffect(() => {
@@ -76,7 +77,6 @@ export default function InterviewTech() {
   // TTS (onDone: TTS 종료 후 콜백)
   const speakQuestion = async (text: string, onDone?: () => void) => {
     audioRef.current?.pause();
-    setIsSpeaking(true);
     try {
       const res = await fetch("/api/tts", {
         method: "POST",
@@ -97,13 +97,13 @@ export default function InterviewTech() {
         URL.revokeObjectURL(url);
         onDone?.();
       };
+      setIsSpeaking(true);
       await audio.play().catch(() => {
         setIsSpeaking(false);
         URL.revokeObjectURL(url);
         onDone?.();
       });
     } catch {
-      setIsSpeaking(false);
       onDone?.();
     }
   };
@@ -175,12 +175,55 @@ export default function InterviewTech() {
         {phase === "question" && !isFollowUp && mainQuestionOrder > 0 && (
           <span className={styles.progress}>{mainQuestionOrder} / 5</span>
         )}
+        <button
+          type="button"
+          className={styles.quitButton}
+          onClick={() => setShowQuitModal(true)}
+        >
+          {lang === "ko" ? "면접 포기" : "Quit Interview"}
+        </button>
       </header>
+
+      {showQuitModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalBox}>
+            <p className={styles.modalText}>
+              {lang === "ko" ? "정말 면접을 포기하시겠습니까?" : "Are you sure you want to quit?"}
+            </p>
+            <div className={styles.modalButtons}>
+              <button
+                type="button"
+                className={styles.modalConfirm}
+                onClick={async () => {
+                  try {
+                    await axios.delete(`/api/rag/interview/${interviewId}`, { withCredentials: true });
+                  } catch { /* 삭제 실패해도 홈으로 이동 */ }
+                  navigate("/");
+                }}
+              >
+                {lang === "ko" ? "네" : "Yes"}
+              </button>
+              <button
+                type="button"
+                className={styles.modalCancel}
+                onClick={() => setShowQuitModal(false)}
+              >
+                {lang === "ko" ? "아니요" : "No"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className={styles.main}>
         <section className={styles.interviewStage}>
           <div className={styles.interviewerSpace}>
-            <img src={currentImg} alt="Technical Interviewer" className={styles.interviewerImage} />
+            <img
+              src={currentImg}
+              alt="Technical Interviewer"
+              className={`${styles.interviewerImage} ${!isSpeaking ? styles.interviewerClickable : ""}`}
+              onClick={() => { if (!isSpeaking) speakQuestion(questionText); }}
+            />
           </div>
 
           <div className={styles.userCamera}>
@@ -191,36 +234,28 @@ export default function InterviewTech() {
             )}
           </div>
 
-          <div className={styles.questionToggleWrap}>
-            <div className={styles.switchBox}>
-              <span className={styles.switchLabel}>{lang === "ko" ? "질문 보기" : "Show Question"}</span>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={showQuestion}
-                className={`${styles.switch} ${showQuestion ? styles.switchOn : styles.switchOff}`}
-                onClick={() => setShowQuestion((prev) => !prev)}
-              >
-                <span className={styles.switchThumb} />
-              </button>
+          <div className={styles.questionControls}>
+            <div className={styles.questionToggleWrap}>
+              <div className={styles.switchBox}>
+                <span className={styles.switchLabel}>{lang === "ko" ? "질문 보기" : "Show Question"}</span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={showQuestion}
+                  className={`${styles.switch} ${showQuestion ? styles.switchOn : styles.switchOff}`}
+                  onClick={() => setShowQuestion((prev) => !prev)}
+                >
+                  <span className={styles.switchThumb} />
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className={styles.speakerButtonWrap}>
-            <button
-              type="button"
-              className={`${styles.speakerButton} ${isSpeaking ? styles.speakerButtonActive : ""}`}
-              onClick={() => speakQuestion(questionText)}
-            >
-              🔊
-            </button>
-          </div>
-
-          {showQuestion && (
-            <footer className={styles.questionBar}>
+          <footer className={`${styles.questionBar} ${!showQuestion ? styles.questionBarHidden : ""}`}>
+            <div className={styles.questionTextWrap}>
               <p className={styles.questionText}>{questionText}</p>
-            </footer>
-          )}
+            </div>
+          </footer>
         </section>
 
         {phase === "finished" ? (
