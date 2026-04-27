@@ -8,6 +8,7 @@ interface QuestionResult {
   questionId: number;
   questionText: string;
   answerText: string;
+  answerSummary: string | null;
   intent: string | null;
   feedback: string | null;
   improvedAnswer: string | null;
@@ -22,12 +23,28 @@ interface SkillData {
   weakness: string;
 }
 
+interface VoiceData {
+  avgSpm: number;
+  totalSpeechSeconds: number;
+  avgSilenceRatio: number;
+  questionCount: number;
+}
+
+interface NonverbalData {
+  smileRate: number;
+  alertnessScore: number;
+  expressionScore: number;
+  sampleCount: number;
+}
+
 interface ResultData {
   status: "GENERATING" | "READY";
   interviewType: string | null;
   interviewAt: string | null;
   summary: string | null;
   softskillAnalysis: string | null;
+  voiceAnalysis: string | null;
+  nonverbalAnalysis: string | null;
   questions: QuestionResult[];
 }
 
@@ -142,6 +159,80 @@ export default function Result() {
       return typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
     } catch { return {}; }
   })();
+
+  const voiceData: VoiceData | null = (() => {
+    if (!data?.voiceAnalysis) return null;
+    try { return JSON.parse(data.voiceAnalysis); }
+    catch { return null; }
+  })();
+
+  const nonverbal: NonverbalData | null = (() => {
+    if (!data?.nonverbalAnalysis) return null;
+    try { return JSON.parse(data.nonverbalAnalysis); }
+    catch { return null; }
+  })();
+
+  const getNonverbalFeedback = (nv: NonverbalData): string => {
+    const lines: string[] = [];
+    if (nv.smileRate >= 30) {
+      lines.push("면접 내내 자연스러운 미소를 유지해 호감을 주었습니다.");
+    } else if (nv.smileRate >= 15) {
+      lines.push("미소가 적절히 나타났으나, 조금 더 편안한 표정을 유지해 보세요.");
+    } else {
+      lines.push("미소가 부족했습니다. 자연스러운 미소는 면접관에게 긍정적인 인상을 남깁니다.");
+    }
+    if (nv.alertnessScore >= 80) {
+      lines.push("눈을 잘 뜨고 집중하는 모습이 돋보였습니다.");
+    } else if (nv.alertnessScore >= 60) {
+      lines.push("전반적으로 집중하는 모습이었으나, 시선이 간혹 분산되었습니다.");
+    } else {
+      lines.push("눈을 자주 내리깔거나 시선이 분산되는 경향이 있었습니다. 카메라를 정면으로 바라보는 연습을 해보세요.");
+    }
+    return lines.join(" ");
+  };
+
+  const nonverbalValueClass = (score: number, good: number, normal: number) => {
+    if (score >= good) return styles.nonverbalValueGood;
+    if (score >= normal) return styles.nonverbalValueNormal;
+    return styles.nonverbalValuePoor;
+  };
+
+  const voiceSpmClass = (spm: number) => {
+    if (spm >= 250 && spm <= 300) return styles.nonverbalValueGood;
+    if (spm >= 200 && spm <= 350) return styles.nonverbalValueNormal;
+    return styles.nonverbalValuePoor;
+  };
+
+  const voiceRatioClass = (ratio: number) => {
+    if (ratio >= 70) return styles.nonverbalValueGood;
+    if (ratio >= 50) return styles.nonverbalValueNormal;
+    return styles.nonverbalValuePoor;
+  };
+
+  const getVoiceFeedback = (vd: VoiceData): string => {
+    const lines: string[] = [];
+    const spm = vd.avgSpm;
+    if (spm < 200) {
+      lines.push("발화 속도가 느려 준비 부족으로 느껴질 수 있습니다. 핵심을 명확히 전달하는 연습이 필요합니다.");
+    } else if (spm < 250) {
+      lines.push("약간 느린 편입니다. 좀 더 자신감 있게 말하는 연습을 해보세요.");
+    } else if (spm <= 300) {
+      lines.push("이상적인 발화 속도입니다. 안정감 있는 전달력을 보여주었습니다.");
+    } else if (spm <= 350) {
+      lines.push("약간 빠른 편입니다. 중요한 내용에서는 속도를 조절해 보세요.");
+    } else {
+      lines.push("발화 속도가 매우 빠릅니다. 긴장으로 인한 과속은 전달력을 떨어뜨릴 수 있습니다.");
+    }
+    const phonationPct = Math.round((1 - vd.avgSilenceRatio) * 100);
+    if (phonationPct >= 70) {
+      lines.push("답변 내내 꾸준히 말하여 유창성이 좋았습니다.");
+    } else if (phonationPct >= 50) {
+      lines.push("적절한 휴지를 취하며 답변했습니다. 침묵을 전략적으로 활용하고 있습니다.");
+    } else {
+      lines.push("침묵 구간이 많아 답변이 단절되는 인상을 줄 수 있습니다. 더 많은 내용을 준비해 보세요.");
+    }
+    return lines.join(" ");
+  };
 
   const getScore = (v: number | SkillData): number =>
     typeof v === "number" ? v : (v?.score ?? 0);
@@ -290,11 +381,84 @@ export default function Result() {
             )}
             <section className={styles.card}>
               <h2 className={styles.cardTitle}>음성 분석</h2>
-              <p className={styles.placeholderText}>준비 중입니다.</p>
+              {voiceData ? (() => {
+                const spmPct = Math.min(Math.round(voiceData.avgSpm / 5.5), 100);
+                const ratioPct = Math.round((1 - voiceData.avgSilenceRatio) * 100);
+                const spmColor = voiceSpmClass(voiceData.avgSpm) === styles.nonverbalValueGood ? "#16a34a"
+                  : voiceSpmClass(voiceData.avgSpm) === styles.nonverbalValueNormal ? "#d97706" : "#dc2626";
+                const ratioColor = voiceRatioClass(ratioPct) === styles.nonverbalValueGood ? "#16a34a"
+                  : voiceRatioClass(ratioPct) === styles.nonverbalValueNormal ? "#d97706" : "#dc2626";
+                return (
+                  <>
+                    <ul className={styles.scoreList}>
+                      <li className={styles.scoreItem}>
+                        <div className={styles.scoreRow}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "2px", width: "72px", flexShrink: 0 }}>
+                            <span className={styles.scoreLabel}>발화 속도</span>
+                            <span style={{ fontSize: "0.72rem", fontWeight: 500, color: "#374151" }}>(SPM)</span>
+                          </div>
+                          <div style={{ flex: 1, position: "relative", height: "8px" }}>
+                            <div style={{ position: "absolute", bottom: "100%", left: 0, right: 0, height: "14px", marginBottom: "3px" }}>
+                              {([200, 250, 300, 350] as const).map((v) => (
+                                <span key={v} style={{ position: "absolute", left: `${v / 5.5}%`, transform: "translateX(-50%)", fontSize: "0.6rem", color: "#b0b7c3" }}>{v}</span>
+                              ))}
+                            </div>
+                            <div style={{ width: "100%", height: "8px", background: "#e5e7eb", borderRadius: "4px", overflow: "hidden" }}>
+                              <div style={{ height: "100%", width: `${spmPct}%`, background: spmColor, borderRadius: "4px", transition: "width 0.6s ease" }} />
+                            </div>
+                          </div>
+                          <span style={{ fontSize: "0.8rem", fontWeight: 700, color: spmColor, minWidth: "56px", textAlign: "right", flexShrink: 0 }}>{isNaN(voiceData.avgSpm) ? "-" : voiceData.avgSpm}</span>
+                        </div>
+                      </li>
+                      <li className={styles.scoreItem} style={{ marginTop: "1.2rem" }}>
+                        <div className={styles.scoreRow}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "2px", width: "72px", flexShrink: 0 }}>
+                            <span className={styles.scoreLabel}>발화 비율</span>
+                            <span style={{ fontSize: "0.72rem", fontWeight: 500, color: "#374151" }}>(%)</span>
+                          </div>
+                          <div style={{ flex: 1, position: "relative", height: "8px" }}>
+                            <div style={{ position: "absolute", bottom: "100%", left: 0, right: 0, height: "14px", marginBottom: "3px" }}>
+                              {([50, 70] as const).map((v) => (
+                                <span key={v} style={{ position: "absolute", left: `${v}%`, transform: "translateX(-50%)", fontSize: "0.6rem", color: "#b0b7c3" }}>{v}%</span>
+                              ))}
+                            </div>
+                            <div style={{ width: "100%", height: "8px", background: "#e5e7eb", borderRadius: "4px", overflow: "hidden" }}>
+                              <div style={{ height: "100%", width: `${ratioPct}%`, background: ratioColor, borderRadius: "4px", transition: "width 0.6s ease" }} />
+                            </div>
+                          </div>
+                          <span style={{ fontSize: "0.8rem", fontWeight: 700, color: ratioColor, width: "60px", textAlign: "right", flexShrink: 0 }}>{ratioPct}%</span>
+                        </div>
+                      </li>
+                    </ul>
+                    <p className={styles.nonverbalFeedback} style={{ marginTop: "1rem" }}>{getVoiceFeedback(voiceData)}</p>
+                  </>
+                );
+              })() : (
+                <p className={styles.placeholderText}>분석 데이터가 없습니다.</p>
+              )}
             </section>
             <section className={styles.card}>
-              <h2 className={styles.cardTitle}>제스처 분석</h2>
-              <p className={styles.placeholderText}>준비 중입니다.</p>
+              <h2 className={styles.cardTitle}>표정 분석</h2>
+              {nonverbal ? (
+                <div className={styles.nonverbalGrid}>
+                  <div className={styles.nonverbalItem}>
+                    <span className={styles.nonverbalLabel}>미소</span>
+                    <span className={nonverbalValueClass(nonverbal.smileRate, 30, 15)}>{nonverbal.smileRate}%</span>
+                  </div>
+                  <div className={styles.nonverbalItem}>
+                    <span className={styles.nonverbalLabel}>집중도</span>
+                    <span className={nonverbalValueClass(nonverbal.alertnessScore, 80, 60)}>{nonverbal.alertnessScore}</span>
+                  </div>
+                  <div className={styles.nonverbalItem}>
+                    <span className={styles.nonverbalLabel}>표정 점수</span>
+                    <span className={nonverbalValueClass(nonverbal.expressionScore, 70, 50)}>{nonverbal.expressionScore} / 100</span>
+                  </div>
+                  <p className={styles.nonverbalSub}>분석 샘플: {nonverbal.sampleCount}회</p>
+                  <p className={styles.nonverbalFeedback}>{getNonverbalFeedback(nonverbal)}</p>
+                </div>
+              ) : (
+                <p className={styles.placeholderText}>분석 데이터가 없습니다.</p>
+              )}
             </section>
           </div>
         )}
@@ -327,10 +491,12 @@ export default function Result() {
                     <p className={styles.feedbackContent}>{currentQ.intent}</p>
                   </div>
                 )}
-                {currentQ.answerText && (
+                {(currentQ.answerSummary || currentQ.answerText) && (
                   <div className={styles.feedbackBlock}>
-                    <span className={`${styles.feedbackBadge} ${styles.badgeAnswer}`}>내 답변</span>
-                    <p className={`${styles.feedbackContent} ${styles.myAnswer}`}>{currentQ.answerText}</p>
+                    <span className={`${styles.feedbackBadge} ${styles.badgeAnswer}`}>내 답변 요약</span>
+                    <p className={`${styles.feedbackContent} ${styles.myAnswer}`}>
+                      {currentQ.answerSummary || currentQ.answerText}
+                    </p>
                   </div>
                 )}
                 {currentQ.feedback && (

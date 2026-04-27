@@ -430,3 +430,70 @@
 .homeButton:hover {
   background: #f3f4f6;
 }
+
+/* 표정 분석 */
+.nonverbalGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.nonverbalItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 16px 24px;
+  min-width: 100px;
+  gap: 6px;
+}
+
+.nonverbalLabel {
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.nonverbalValue {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #4f46e5;
+}
+
+.nonverbalValueGood {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.nonverbalValueNormal {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #d97706;
+}
+
+.nonverbalValuePoor {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #dc2626;
+}
+
+.nonverbalSub {
+  width: 100%;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+.nonverbalFeedback {
+  width: 100%;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: #374151;
+  background: #f5f3ff;
+  border-left: 3px solid #6366f1;
+  border-radius: 0 8px 8px 0;
+  padding: 0.65rem 1rem;
+  margin: 0.25rem 0 0;
+}
